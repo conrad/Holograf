@@ -23,9 +23,6 @@ module.exports = React.createClass({
     Actions.compile();
   },
 
-  componentDidMount: function() {
-    this.programState = ProgramObject.buildState(0);
-  },
 
   previousState: function() {
     this.setState({currentState: ProgramObject.previousState()});
