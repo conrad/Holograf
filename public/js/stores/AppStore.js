@@ -4,7 +4,7 @@
 
 var AppDispatcher = require('../dispatcher/appDispatcher');
 var AppConstants = require('../constants/appConstants');
-var Program = require('../Program.js');
+var Program = require('../utils/Program.js');
 var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 var Compiler = require('../compiler/Compiler')
@@ -13,7 +13,7 @@ var CHANGE_EVENT = 'change';
 
 var _code = '';
 var _data = '';
-var _currentState = null;
+var _currentStep = null;
 
 var updateCode = function(code) {
   _code = code;
@@ -36,7 +36,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
             "}\n"+
             "var x = f(2);";
     _data = [];
-    _currentState = Program.buildState(0);
+    _currentStep = Program.buildStep(0);
   },
 
   //return an object with all of the files
@@ -49,7 +49,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
   },
 
   getProgramState: function(n) {
-    return Program.buildState(n);
+    return Program.buildStep(n);
   },
 
   updateProgramState: function(n) {

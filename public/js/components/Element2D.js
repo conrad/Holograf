@@ -19,28 +19,30 @@ var React = require('react');
       // container: 0
       // createdAt: 0
 
-module.exports = React.createClass({
-
-  console.log('this.props in Element2D:',this.props);
-
-  if (this.props.type === 'number') {
-    node = <div className='number'>this.props.value</div>
-
-  } else if (this.props.type === 'string') {
-    node = <div className='string'>this.props.value</div>
-  } else if (this.props.type === 'boolean') {
-    node = <div className='boolean'>this.props.value</div>
-  } else if (this.props.type === 'string') {
-    node = <div className='for'>this.props.value</div>
-  } 
-  // else if (this.props.type === 'string') {
-  // } else if (this.props.type === 'string') {  
-  // }
+var Element2D = React.createClass({
 
   render:function(){
+  
+    console.log('this.props in Element2D:', this.props);
+
+    if (this.props.type === 'number') {
+      node = <div className='number'>this.props.value</div>
+
+    } else if (this.props.type === 'string') {
+      node = <div className='string'>this.props.value</div>
+    } else if (this.props.type === 'boolean') {
+      node = <div className='boolean'>this.props.value</div>
+    } else if (this.props.type === 'string') {
+      node = <div className='for'>this.props.value</div>
+    } 
+    // else if (this.props.type === 'string') {
+    // } else if (this.props.type === 'string') {  
+    // }
+
     return (
-      {node}
+      <div>{node}</div>
     );
   }
 });
 
+module.exports = Element2D;

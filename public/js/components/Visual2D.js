@@ -65,9 +65,8 @@ module.exports = React.createClass({
     return (
       <Panel>
         <div className='global-container'>
-
+          {node}
         </div>
-        {node}
       </Panel>
     );
   }
