@@ -5,7 +5,7 @@
 var React = require('react');
 var Button = require('react-bootstrap/Button');
 var Panel = require('react-bootstrap/Panel');
-var ProgramObject = require('../Program.js');
+var Program = require('../utils/Program.js');
 var Thing = require('./Thing.js')
 // var CodeMirror = require('./CodeMirror/');
 // var Actions = require('../actions/Actions');
@@ -13,36 +13,30 @@ var Thing = require('./Thing.js')
 
 module.exports = React.createClass({
 
-  // this.props should have an array of the program states
-
-  getInitialState: function() {
-    return { currentState: ProgramObject.buildState(0) };
-  },
+  // this.props should have an array of the program states/steps
 
   compile: function () {
     Actions.compile();
   },
 
 
-  previousState: function() {
-    this.setState({currentState: ProgramObject.previousState()});
-    this.programState = ProgramObject.previousState();
+  previousStep: function() {
+    this.setState({currentStep: Program.previousStep()});
+    this.programState = Program.previousStep();
   },
 
-  nextState: function() {
-    this.setState({currentState: ProgramObject.nextState()});
-    this.programState = ProgramObject.previousState();
+  nextStep: function() {
+    this.setState({currentStep: Program.nextStep()});
+    this.programState = Program.previousStep();
   },
-
-  buildProgramState: function(index) {},
 
   render: function () {
 
     var displayThings = [];
 
-    for (var key in this.state.currentState) {
+    for (var key in this.state.currentStep) {
       if (key !== 'index') {
-        displayThings.push(<li><Thing {...this.state.currentState[key]} /></li>);  
+        displayThings.push(<li><Thing {...this.state.currentStep[key]} /></li>);  
       }
     }
 
@@ -53,8 +47,8 @@ module.exports = React.createClass({
             {displayThings}
           </ul>
         </Panel>
-        <Button bsStyle="primary" className={'pull-left'} onClick={this.previousState} >Prev</Button>
-        <Button bsStyle="primary" className={'pull-right'} onClick={this.nextState} >Next</Button>
+        <Button bsStyle="primary" className={'pull-left'} onClick={this.previousStep} >Prev</Button>
+        <Button bsStyle="primary" className={'pull-right'} onClick={this.nextStep} >Next</Button>
       </div>
     );
   }
