@@ -4,7 +4,7 @@
 
 var AppDispatcher = require('../dispatcher/appDispatcher');
 var AppConstants = require('../constants/appConstants');
-var Program = require('../utils/Program.js');
+var Program = require('../compiler/Program.js');
 var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 var Compiler = require('../compiler/Compiler')
@@ -36,7 +36,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
             "}\n"+
             "var x = f(2);";
     _data = [];
-    _currentStep = Program.buildStep(0);
+    // _currentStep = Program.buildStep(0);
   },
 
   //return an object with all of the files

@@ -5,7 +5,7 @@
 var React = require('react');
 var Button = require('react-bootstrap/Button');
 var Panel = require('react-bootstrap/Panel');
-var Program = require('../utils/Program.js');
+var Program = require('../compiler/Program.js');
 var Thing = require('./Thing.js')
 // var CodeMirror = require('./CodeMirror/');
 // var Actions = require('../actions/Actions');
@@ -21,24 +21,20 @@ module.exports = React.createClass({
 
 
   previousStep: function() {
-    this.setState({currentStep: Program.previousStep()});
-    this.programState = Program.previousStep();
   },
 
   nextStep: function() {
-    this.setState({currentStep: Program.nextStep()});
-    this.programState = Program.previousStep();
   },
 
   render: function () {
 
     var displayThings = [];
 
-    for (var key in this.state.currentStep) {
-      if (key !== 'index') {
-        displayThings.push(<li><Thing {...this.state.currentStep[key]} /></li>);  
-      }
-    }
+    // for (var key in this.state.currentStep) {
+    //   if (key !== 'index') {
+    //     displayThings.push(<li><Thing {...this.state.currentStep[key]} /></li>);  
+    //   }
+    // }
 
     return (
       <div>
