@@ -46,3 +46,37 @@ var Element2D = React.createClass({
 });
 
 module.exports = Element2D;
+
+
+
+// var Elements2D = [];
+// for (var key in this.state.currentState) {
+//   if (key !== 'index') {
+//     Elements2D.push(this.state.currentState[key]);  
+//   }
+// }
+
+
+// var node = null;
+
+// if (this.props.type === 'number') {
+//   node = <div className='number'>this.props.value</div>
+
+// } else if (this.props.type === 'string') {
+//   node = <div className='string'>this.props.value</div>
+// } else if (this.props.type === 'boolean') {
+//   node = <div className='boolean'>this.props.value</div>
+// } else if (this.props.type === 'string') {
+//   node = <div className='for'>this.props.value</div>
+// } 
+// else if (this.props.type === 'string') {
+// } else if (this.props.type === 'string') {  
+// }
+
+
+// append to its container
+
+// <div className='global-container'>
+//   {node}
+// </div>
+

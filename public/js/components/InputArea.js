@@ -7,6 +7,7 @@ var TabbedArea = require('react-bootstrap/TabbedArea');
 var TabPane = require('react-bootstrap/TabPane');
 var CodeEditor = require('./CodeEditor');
 var Visual2D = require('./Visual2D.js');
+var Visual3D = require('./Visual3D.js');
 // var DataEditor = require('./DataEditor');
 var ProgramStateView = require('./ProgramStateView');
 
@@ -21,10 +22,13 @@ module.exports = React.createClass({
               <CodeEditor code={this.props.code} />
             </TabPane>
             <TabPane eventKey={2} tab="View State">
-              <ProgramStateView />
+              <ProgramStateView data={this.props.data} />
             </TabPane>
             <TabPane eventKey={3} tab="2D Visualization">
-              <Visual2D />
+              <Visual2D data={this.props.data} />
+            </TabPane>
+            <TabPane eventKey={4} tab="3D Visualization">
+              <Visual3D data={this.props.data} />
             </TabPane>
       </TabbedArea>
     );

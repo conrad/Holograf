@@ -2,6 +2,8 @@
  * @jsx React.DOM
  */
 
+// ProgramStateView.js
+
 var React = require('react');
 var Button = require('react-bootstrap/Button');
 var Panel = require('react-bootstrap/Panel');
@@ -10,15 +12,11 @@ var Thing = require('./Thing.js')
 // var CodeMirror = require('./CodeMirror/');
 // var Actions = require('../actions/Actions');
 
-
 module.exports = React.createClass({
-
-  // this.props should have an array of the program states/steps
 
   compile: function () {
     Actions.compile();
   },
-
 
   previousStep: function() {
   },

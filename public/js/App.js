@@ -14,8 +14,8 @@ var App = React.createClass({
   getAppState: function() {
     return {
       code: AppStore.getCode(),
-      program: AppStore.getProgram(),
-      step: AppStore.getProgramStep()
+      program: AppStore.getData(),
+      // step: AppStore.getProgramStep()
     };
   },
 

@@ -3,15 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>SuspiciousPi</title>
-  <link rel="stylesheet" media="screen" href="css/style.min.css">
+  <link rel="stylesheet" type="text/css" href="http://code.famo.us/famous/0.3/famous.css" />
   <link href="bower_components/c3/c3.css" rel="stylesheet" type="text/css">
-
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js"></script>
-  <script src="bower_components/react/react.min.js"></script>
-  <script src='bower_components/raphael/raphael-min.js'></script>
-
-
+  <link rel="stylesheet" media="screen" href="css/style.min.css">
 </head>
 <body>
 
@@ -28,10 +22,14 @@
 
 
 
-  <link rel="stylesheet" type="text/css" href="http://code.famo.us/famous/0.3/famous.css" />
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js"></script>
+  <script src="bower_components/react/react.min.js"></script>
+  <!-- <script src='bower_components/raphael/raphael-min.js'></script> -->
   <script type="text/javascript" src="http://code.famo.us/famous/0.3/famous-global.min.js"></script>
 
   <script src="js/main.js"></script>
-
+  <!-- require.js must load after main.js -->
+  <script type="text/javascript" src="http://code.famo.us/lib/require.js"></script>
 </body>
 </html>

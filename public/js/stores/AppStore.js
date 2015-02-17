@@ -12,7 +12,7 @@ var Compiler = require('../compiler/Compiler')
 var CHANGE_EVENT = 'change';
 
 var _code;
-var _program;
+var _data;
 var _currentStep = {};
 
 var updateCode = function(code) {
@@ -20,8 +20,8 @@ var updateCode = function(code) {
 }
 
 var compileCode = function() {
-  _program = Compiler.parse(_code);
-  console.log(_program);
+  _data = Compiler.parse(_code);
+  console.log(_data);
 }
 
 var AppStore = assign({}, EventEmitter.prototype, {
@@ -36,35 +36,20 @@ var AppStore = assign({}, EventEmitter.prototype, {
             "}\n"+
             "var x = f(2);";
     _data = [];
-    // _currentStep = Program.buildStep(0);
   },
 
-  //return an object with all of the files
   getCode: function() {
     return _code;
   },
 
-  // TODO: change this to getProgram, but need to change in components & action files
-  getProgram: function() {       
-    return _program;
+  getData: function() {       
+    return _data;
   },
 
   getProgramStep: function(n) {
-    if (_program) {
-      return _program.buildStep(n);
+    if (_data) {
+      return _data.buildStep(n);
     }
-  },
-
-  updateProgramStep: function(n) {
-    _program.updateProgramStep(n);
-  },
-
-  previousStep: function() {
-    _currentStep = _program.previousStep();
-  },
-
-  nextStep: function() {
-    _currentStep = _program.previousStep();
   },
 
   emitChange: function() {
@@ -84,7 +69,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
     var action = payload.action; 
     switch(action.actionType){
       
-      case AppConstants.CHANGE_CODE:
+      case AppConstants.UPDATE_CODE:
         updateCode(action.code);
         break;
 
