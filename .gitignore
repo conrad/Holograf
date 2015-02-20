@@ -29,6 +29,7 @@ dist/css
 dist/three
 data/
 test/spec/bundle.js
+dist/three/threeMaster.js
 
 # Dependency directorys
 # Deployed apps should consider commenting these lines out:
