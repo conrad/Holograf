@@ -31,16 +31,16 @@ var displayScene=function(allData){
 	particleLight,
 	cubes,
 	modal,
-	scenePaused=false,
-	expanded=false,
+	scenePaused = false,
+	expanded = false,
+	killControls = false,
 	tween;
 	
 	var windowHalfX = window.innerWidth / 2;
 	var windowHalfY = window.innerHeight / 2;
 	
-	
+
 	//extract this later
-	
 	scopes={};
 	console.log("---scopes---");
 	console.log(allData);
@@ -60,24 +60,27 @@ var displayScene=function(allData){
 	init(timeline);
 	animate();
 	
+
 	function init(data) {
 		/*
 		container = document.createElement( 'div' );
 		document.body.appendChild( container );
 		*/
 		container = document.getElementById('three-scene');
-		
+
 		containerWidth = container.clientWidth;
 		containerHeight = container.clientHeight;
 
+		// PerspectiveCamera method args: (field of view angle, aspectRatio, near, far)
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
 		camera.position.z = 5000;
 		camera.position.y = 0;
 		camera.position.x = -4000;
-		
-		controls = new THREE.OrbitControls(camera, container);
-		controls.addEventListener( 'change', render );
-		
+
+		controls = makeControls(camera, container);
+		// controls = new THREE.OrbitControls(camera, container);
+		// controls.addEventListener( 'change', render );
+
 
 
 		scene = new THREE.Scene();
@@ -98,9 +101,11 @@ var displayScene=function(allData){
 
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
-		renderer = new THREE.CanvasRenderer();
-		renderer.setClearColor( 0x333333, 1);
-		renderer.setSize( window.innerWidth-20, window.innerHeight-20 );
+		renderer = makeRenderer();
+		// placed this code inside renderer.js
+		// renderer = new THREE.CanvasRenderer();
+		// renderer.setClearColor( 0x333333, 1);
+		// renderer.setSize( window.innerWidth-20, window.innerHeight-20 );
 		container.appendChild( renderer.domElement );
 		window.addEventListener( 'resize', onWindowResize, false );
 
@@ -251,21 +256,13 @@ var displayScene=function(allData){
 					plane.collapse=new TWEEN.Tween(plane.position).to({z:(composite.maxSize/2)+(10*i)},1500).easing(TWEEN.Easing.Quadratic.InOut);
 					plane.expand=new TWEEN.Tween(plane.position).to({z:((interval)+interval*i)},1500).easing(TWEEN.Easing.Quadratic.InOut);
 					composite.add( plane );
-							
 				}
-				
-	
 			}
-			
-			
 		}
-		
-		
-		
-		
+
 		return composite;
-	
 	};	
+
 
 	function onMouseMove( e ) {
 		var vector = new THREE.Vector3();
@@ -315,18 +312,21 @@ var displayScene=function(allData){
 						shape.material.color.setRGB( 1, 1, 0 );
 					}
 				});
-				
-				
 			}
 
 		}
-		
+
 	}
 
 	
 	function animate() {
 		requestAnimationFrame( animate );
-		controls.update();
+		if (killControls) 
+		  controls.enabled = false;
+		else 
+		  controls.update(controlsObj.delta);
+		// controls.update();
+
 		render();
 	}
 	
@@ -353,6 +353,7 @@ var displayScene=function(allData){
 	};
 	
 	function render() {
+		// lookAt might be preventing panning
 		camera.lookAt(new THREE.Vector3(0,0,5000));
 
 		TWEEN.update();
@@ -365,9 +366,8 @@ var displayScene=function(allData){
 		
 		renderer.render( scene, camera );
 		// effect.render( scene, camera );			// This is used for stereoEffect
-		sceneRendered = true;
+		// sceneRendered = true;
 	}
 	
 };
-
 
