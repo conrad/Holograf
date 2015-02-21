@@ -270,7 +270,7 @@ subroutines.skybox = function(scene, maxSize) {
 	}
 
 	// back  & bottom vertical
-	z = -maxSize;
+	z = -maxSize - interval;
 	while (z < 2 * maxSize) {
 		var geometry = new THREE.Geometry();
 		x = 2 * maxSize;
@@ -286,7 +286,7 @@ subroutines.skybox = function(scene, maxSize) {
 
 
 	// bottom horizontal
-	x = -maxSize;
+	x = -maxSize - interval;
 	while (x < 2 * maxSize) {
 		var geometry = new THREE.Geometry();
 		y = -maxSize;
@@ -299,26 +299,6 @@ subroutines.skybox = function(scene, maxSize) {
 		scene.add(line);
 	}
 
-	// bottom vertical
-	// z = -maxSize;
-	// while (z < 2 * maxSize) {
-	// 	var geometry = new THREE.Geometry();
-	// 	x = 2 * maxSize;
-	// 	z += interval; 
-
-	// 	geometry.vertices.push( new THREE.Vector3( x, -maxSize, z ) );
-	// 	geometry.vertices.push( new THREE.Vector3( x, maxSize, z ) );
-		
-	// 	var line = new THREE.Line( geometry, material );
-	// 	scene.add(line);
-	// }
-
-
-
-
-
-
-
 
 
 
@@ -326,7 +306,8 @@ subroutines.skybox = function(scene, maxSize) {
 };
 
 
-subroutines.Axes = function() {
+
+subroutines.Axes = function(scene) {
 	var xLineMaterial = new THREE.LineBasicMaterial( { color: 'yellow'} );
 	var yLineMaterial = new THREE.LineBasicMaterial( { color: 'red'} );
 	var zLineMaterial = new THREE.LineBasicMaterial( { color: 'green'} );
@@ -343,12 +324,13 @@ subroutines.Axes = function() {
 	zGeometry.vertices.push(	new THREE.Vector3( 0, 0, -10000 ) );
 	zGeometry.vertices.push(	new THREE.Vector3( 0, 0, 10000 ) );
 	
-	var lines = [];
-	lines[0] = new THREE.Line( xGeometry, xLineMaterial );
-	lines[1] = new THREE.Line( yGeometry, yLineMaterial );
-	lines[2] = new THREE.Line( zGeometry, zLineMaterial );
+	xLines[0] = new THREE.Line( xGeometry, xLineMaterial );
+	yLines[1] = new THREE.Line( yGeometry, yLineMaterial );
+	zLines[2] = new THREE.Line( zGeometry, zLineMaterial );
 
-	return lines;
+	scene.add(xLine);
+	scene.add(yLine);
+	scene.add(zLine);
 };
 
 subroutines.Composite = function(data,scopes){
