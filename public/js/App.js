@@ -16,26 +16,20 @@ var App = React.createClass({
   //get the current data from the Store
   getAppState: function() {
     return AppStore.getState();
-    // {
-    //   // code: AppStore.getCode(),
-    //   // data: AppStore.getData(),
-    //   // shareUrl: AppStore.getShareUrl(),
-    //   // step: AppStore.getProgramStep()
-    // };
   },
 
   //this is run automatically each time a new <App /> is created
   //the object that is returned form getInitialState is set as the state of the component, accessed through this.state.variableName
   getInitialState: function() {
     AppStore.initialize();
-    Actions.insertCode(this.getParams().id);
+    Actions.fetchCode(this.getParams().id);
     return this.getAppState();
   },
 
   //this will handle transitions between pages within application,
   //because getInitialState will only be called upon the initial GET request
   componentWillReceiveProps: function () {
-    Actions.insertCode(this.getParams().id);
+    Actions.fetchCode(this.getParams().id);
   },
 
   //register an event listener with the store once the component has been successfully rendered/mounted on the page
