@@ -84,6 +84,7 @@ var displayScene=function(allData){
 
 
 		scene = new THREE.Scene();
+		scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
 
 		particleLight = TimeLight();
 		particleLight.tween.start();
