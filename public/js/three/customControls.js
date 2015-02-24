@@ -1,7 +1,8 @@
 // customControls.js
-var theatre = require('scene.js');
+// var theatre = require('scene.js');
+// theatre.customControls = function ( object, domElement ) {
 
-theatre.customControls = function ( object, domElement ) {
+var customControls = function ( object, domElement ) {
 
   this.object = object;
   this.domElement = ( domElement !== undefined ) ? domElement : document;
@@ -27,7 +28,10 @@ theatre.customControls = function ( object, domElement ) {
     PAN_LEFT: 65,
     PAN_RIGHT: 68,
     PAN_DOWN: 83,
-    PAN_UP: 87
+    PAN_UP: 87,
+    EXPAND: 13,     // enter 
+    PAUSE: 32,      // spacebar
+    PAN_LOCK: 16    // shift
   };
 
 
@@ -280,40 +284,26 @@ theatre.customControls = function ( object, domElement ) {
   //     dollyDelta.subVectors( dollyEnd, dollyStart );
 
   //     if ( dollyDelta.y > 0 ) {
-
   //       scope.dollyIn();
-
   //     } else {
-
   //       scope.dollyOut();
-
   //     }
-
   //     dollyStart.copy( dollyEnd );
 
   //   } else if ( state === STATE.PAN ) {
   //     if ( scope.noPan === true ) { return; }
-
   //     panEnd.set( event.clientX, event.clientY );
   //     panDelta.subVectors( panEnd, panStart );
-      
   //     scope.pan( panDelta );
-
   //     panStart.copy( panEnd );
-
   //   }
-
   // }
 
   // function onMouseUp( /* event */ ) {
-
   //   if ( scope.enabled === false ) { return; }
-
   //   document.removeEventListener( 'mousemove', onMouseMove, false );
   //   document.removeEventListener( 'mouseup', onMouseUp, false );
-
   //   state = STATE.NONE;
-
   // }
 
   // function onMouseWheel( event ) {
@@ -322,31 +312,20 @@ theatre.customControls = function ( object, domElement ) {
   //   event.preventDefault();
   //   if ( scope.enabled === false ) { return; }
   //   if ( scope.noZoom === true ) { return; }
-
   //   var delta = 0;
-
   //   if ( event.wheelDelta ) { // WebKit / Opera / Explorer 9
-
   //     delta = event.wheelDelta;
-
   //   } else if ( event.detail ) { // Firefox
-
   //     delta = - event.detail;
-
   //   }
-
   //   if ( delta > 0 ) {
-
   //     scope.dollyOut();
-
   //   } else {
-
   //     scope.dollyIn();
-
   //   }
-
   // }
 
+  // this.onKeyDown = function( event ) {
   var onKeyDown = function( event ) {
 
     if (event.keyCode === scope.keys.UP) {
@@ -371,25 +350,18 @@ theatre.customControls = function ( object, domElement ) {
     //     break;
     // }
 
-  
   // function touchstart( event ) {
-
   //   if ( scope.enabled === false ) { return; }
   //   switch ( event.touches.length ) {
 
   //     case 1: // one-fingered touch: rotate
   //       if ( scope.noRotate === true ) { return; }
-
   //       state = STATE.TOUCH_ROTATE;
-
   //       rotateStart.set( event.touches[ 0 ].pageX, event.touches[ 0 ].pageY );
   //       break;
-
   //     case 2: // two-fingered touch: dolly
   //       if ( scope.noZoom === true ) { return; }
-
   //       state = STATE.TOUCH_DOLLY;
-
   //       var dx = event.touches[ 0 ].pageX - event.touches[ 1 ].pageX;
   //       var dy = event.touches[ 0 ].pageY - event.touches[ 1 ].pageY;
   //       var distance = Math.sqrt( dx * dx + dy * dy );
@@ -446,13 +418,9 @@ theatre.customControls = function ( object, domElement ) {
   //       dollyDelta.subVectors( dollyEnd, dollyStart );
 
   //       if ( dollyDelta.y > 0 ) {
-
   //         scope.dollyOut();
-
   //       } else {
-
   //         scope.dollyIn();
-
   //       }
 
   //       dollyStart.copy( dollyEnd );
@@ -472,15 +440,11 @@ theatre.customControls = function ( object, domElement ) {
 
   //     default:
   //       state = STATE.NONE;
-
   //   }
-
   // }
 
   // function touchend( /* event */ ) {
-
   //   if ( scope.enabled === false ) { return; }
-
   //   state = STATE.NONE;
   // }
 
@@ -489,7 +453,7 @@ theatre.customControls = function ( object, domElement ) {
   // this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
   // this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
 
-  this.domElement.addEventListener( 'keydown', onKeyDown, false );
+  document.addEventListener( 'keydown', onKeyDown, false );
 
   // this.domElement.addEventListener( 'touchstart', touchstart, false );
   // this.domElement.addEventListener( 'touchend', touchend, false );

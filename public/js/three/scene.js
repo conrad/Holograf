@@ -51,7 +51,7 @@ theatre.display = function(allData){
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
 		window.addEventListener( 'resize', onWindowResize, false );
-		document.addEventListener("keydown", onKeyDown, false); 
+		// document.addEventListener("keydown", controls.onKeyDown, false); 
 
 	}
 
@@ -109,15 +109,29 @@ theatre.display = function(allData){
 		}
 	}
 
-	function onKeyDown ( event ) {
-		console.log('onKeyDown CALLED');
-	  if (event.keyCode === 38) {
-	    console.log('UP!');
-	    // scope.rotateUp();
-	  }
-	  // if ( scope.enabled === false ) { return; }
+	// function onKeyDown ( event ) {
+	// 	console.log('onKeyDown CALLED');
+	// 	var keys = { 
+	// 	  ROTATE_LEFT: 37, 
+	// 	  ROTATE_UP: 38, 
+	// 	  ROTATE_RIGHT: 39, 
+	// 	  ROTATE_DOWN: 40,
+	// 	  PAN_LEFT: 65,
+	// 	  PAN_RIGHT: 68,
+	// 	  PAN_DOWN: 83,
+	// 	  PAN_UP: 87,
+	// 	  EXPAND: 13,     // enter 
+	// 	  PAUSE: 32,      // spacebar
+	// 	  PAN_LOCK: 16    // shift
+	// 	};
+	//   if (event.keyCode === keys[ROTATE_LEFT]) {
+	//     console.log('UP!');
 
-	};
+	//     // scope.rotateUp();
+	//   }
+	//   // if ( scope.enabled === false ) { return; }
+
+	// };
 
 
 	

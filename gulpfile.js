@@ -67,14 +67,14 @@ gulp.task('three', function() {
     // .pipe(gulp.dest('./public/js'));
 });
 
-// gulp.task('threeToBrowse', function() {
-//   return browserify('./public/js/threeMain.js')
-//     .transform('jstify')
-//     .bundle()
-//     .pipe(source('threeMain.js'))
-//     // .pipe(streamify(uglify()))
-//     .pipe(gulp.dest('dist/three'));
-// });
+gulp.task('threeToBrowse', function() {
+  return browserify('./public/js/threeMain.js')
+    .transform('jstify')
+    .bundle()
+    .pipe(source('threeMain.js'))
+    // .pipe(streamify(uglify()))
+    .pipe(gulp.dest('dist/three'));
+});
 
 
 gulp.task('run', shell.task([ 
@@ -95,10 +95,11 @@ gulp.task('test', function(callback) {
 });
 
 gulp.task('build', function(callback) {
-  runSequence('clean', 'compile', 'copy', 'three', 'threeToBrowse', 'sass', callback);
+  runSequence('clean', 'compile', 'copy', 'three', 'sass', callback);
 });
 // , 'test'     // removed to speed up build process
     // we should (/it's recommended to) do this whenever we PUSH 
+// 'threeToBrowse', 
 
 gulp.task('default', ['build', 'watch', 'run']);
 
