@@ -350,7 +350,7 @@ THREE.OrbitAndPanControls = function ( object, domElement ) {
     }
     if ( scope.enabled === false ) { return; }
 
-
+  };
     // switch ( event.keyCode ) {
     //   case scope.keys.UP:
     //     scope.pan( new THREE.Vector2( 0, 1 ) );
@@ -366,7 +366,6 @@ THREE.OrbitAndPanControls = function ( object, domElement ) {
     //     break;
     // }
 
-  };
   
   // function touchstart( event ) {
 
