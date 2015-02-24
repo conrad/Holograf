@@ -1,5 +1,5 @@
 // customControls.js
-var theatre = require('./scene.js');
+var theatre = require('scene.js');
 
 theatre.customControls = function ( object, domElement ) {
 

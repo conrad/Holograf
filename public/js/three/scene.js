@@ -1,6 +1,8 @@
+module.exports = theatre;
+
 var theatre={scenePaused:false,expanded:false};
 
-theatre.display=function(allData){	
+theatre.display = function(allData){	
 	var composite, container, controls, camera, scene, renderer, particleLight, tween, visualTimeline;
 	var windowHalfX = window.innerWidth / 2;
 	var windowHalfY = window.innerHeight / 2;
@@ -20,7 +22,7 @@ theatre.display=function(allData){
 		camera.position.z = 5000;
 		camera.position.y = 0;
 		camera.position.x = -4000;
-		controls = new THREE.OrbitControls(camera, container);
+		controls = new THREE.CustomControls(camera, container);
 		controls.addEventListener( 'change', render );
 		// controls = makeControls(camera, container);
 		// controls = new THREE.OrbitControls(camera, container);
@@ -40,14 +42,17 @@ theatre.display=function(allData){
 		//will add the dotgrid to the scene;
 		subroutines.dotGrid(scene,data,scopes,composite.maxSize);
 		
-		renderer = new THREE.WebGLRenderer();
+		renderer = new THREE.WebGLRenderer({antialias:true});
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight-$(container).offset().top );
 			renderer.setClearColor( 0x333333, 1);
 			container.appendChild( renderer.domElement );
+
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
 		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener("keydown", onKeyDown, false); 
+
 	}
 
 	function onWindowResize() {
@@ -104,13 +109,24 @@ theatre.display=function(allData){
 		}
 	}
 
+	function onKeyDown ( event ) {
+		console.log('onKeyDown CALLED');
+	  if (event.keyCode === 38) {
+	    console.log('UP!');
+	    // scope.rotateUp();
+	  }
+	  // if ( scope.enabled === false ) { return; }
+
+	};
+
+
 	
 	function animate() {
 		requestAnimationFrame( animate );
-		if (killControls) 
-		  controls.enabled = false;
-		else 
-		  controls.update(controlsObj.delta);
+		// if (killControls) 
+		//   controls.enabled = false;
+		// else 
+		//   controls.update(controlsObj.delta);
 		// controls.update();
 
 		render();
@@ -134,6 +150,10 @@ theatre.display=function(allData){
 		}
 		theatre.expanded=!theatre.expanded;
 	};
+
+	
+
+
 	
 	function render() {
 		// lookAt might be preventing panning
