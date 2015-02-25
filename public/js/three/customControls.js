@@ -461,4 +461,5 @@ var customControls = function ( object, domElement ) {
 
 };
 
-THREE.CustomControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+customControls.prototype = Object.create( THREE.EventDispatcher.prototype );
+// THREE.CustomControls.prototype = Object.create( THREE.EventDispatcher.prototype );

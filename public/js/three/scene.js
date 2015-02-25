@@ -1,4 +1,4 @@
-module.exports = theatre;
+// module.exports = theatre;
 
 var theatre={scenePaused:false,expanded:false};
 
@@ -22,8 +22,9 @@ theatre.display = function(allData){
 		camera.position.z = 5000;
 		camera.position.y = 0;
 		camera.position.x = -4000;
-		controls = new THREE.CustomControls(camera, container);
-		controls.addEventListener( 'change', render );
+		controls = new customControls(camera, container);
+		// controls = new THREE.CustomControls(camera, container);
+		controls.addEventListener( 'change', render );  
 		// controls = makeControls(camera, container);
 		// controls = new THREE.OrbitControls(camera, container);
 
@@ -51,7 +52,7 @@ theatre.display = function(allData){
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
 		window.addEventListener( 'resize', onWindowResize, false );
-		// document.addEventListener("keydown", controls.onKeyDown, false); 
+		document.addEventListener("keydown", onKeyDown, false);  // controls.onKeyDown
 
 	}
 
@@ -109,32 +110,201 @@ theatre.display = function(allData){
 		}
 	}
 
-	// function onKeyDown ( event ) {
-	// 	console.log('onKeyDown CALLED');
-	// 	var keys = { 
-	// 	  ROTATE_LEFT: 37, 
-	// 	  ROTATE_UP: 38, 
-	// 	  ROTATE_RIGHT: 39, 
-	// 	  ROTATE_DOWN: 40,
-	// 	  PAN_LEFT: 65,
-	// 	  PAN_RIGHT: 68,
-	// 	  PAN_DOWN: 83,
-	// 	  PAN_UP: 87,
-	// 	  EXPAND: 13,     // enter 
-	// 	  PAUSE: 32,      // spacebar
-	// 	  PAN_LOCK: 16    // shift
-	// 	};
-	//   if (event.keyCode === keys[ROTATE_LEFT]) {
-	//     console.log('UP!');
 
-	//     // scope.rotateUp();
-	//   }
-	//   // if ( scope.enabled === false ) { return; }
-
-	// };
-
-
+///////////////////////////////////////////////////////////
+// CONTROLS
+///////////////////////////////////////////////////////////
 	
+	////////////////////
+	// API 
+	var target = new THREE.Vector3();
+	var zoomSpeed = 1.0;
+	var minDistance = 0;
+	var maxDistance = Infinity;
+	var rotateSpeed = 1.0;
+	var keyPanSpeed = 7.0; // pixels moved per arrow key push
+	var minPolarAngle = 0;  // vertical orbit range, upper & lower limits.
+	var maxPolarAngle = Math.PI;   // Range is 0 to Math.PI radians.
+
+	// Toggle whether controls are enabled based on tab selected
+	var controlsEnabled = true;
+	var keys = { 
+	  ROTATE_LEFT: 37, 
+	  ROTATE_UP: 38, 
+	  ROTATE_RIGHT: 39, 
+	  ROTATE_DOWN: 40,
+	  PAN_LEFT: 65,
+	  PAN_RIGHT: 68,
+	  PAN_DOWN: 83,
+	  PAN_UP: 87,
+	  EXPAND: 13,     // enter 
+	  PAUSE: 32,      // spacebar
+	  PAN_LOCK: 16    // shift
+	};
+
+
+	///////////////////
+	// Internals 
+	// var scope = this;
+	var EPS = 0.000001;
+	var phiDelta = 0;
+	var thetaDelta = 0;
+	var scale = 1;
+	var pan = new THREE.Vector3();
+
+	var lastPosition = new THREE.Vector3();
+
+	// var rotateStart = new THREE.Vector2();
+	// var rotateEnd = new THREE.Vector2();
+	// var rotateDelta = new THREE.Vector2();
+
+	// var panStart = new THREE.Vector2();
+	// var panEnd = new THREE.Vector2();
+	// var panDelta = new THREE.Vector2();
+
+	// var dollyStart = new THREE.Vector2();
+	// var dollyEnd = new THREE.Vector2();
+	// var dollyDelta = new THREE.Vector2();
+
+	// var STATE = { NONE : -1, ROTATE : 0, DOLLY : 1, PAN : 2, TOUCH_ROTATE : 3, TOUCH_DOLLY : 4, TOUCH_PAN : 5 };
+	// var state = STATE.NONE;
+
+
+	function onKeyDown (event) {
+		console.log('onKeyDown CALLED');
+	  if ( controlsEnabled === false ) { 
+	  	console.log('controls not enabled');
+	  	return; 
+	  }
+
+	  if (event.keyCode === keys.ROTATE_UP) {
+	    console.log('rotate UP!');
+	    rotateUp();
+	  } else if (event.keyCode === keys.ROTATE_DOWN) {
+	    console.log('rotate DOWN!');
+	    rotateDown();
+	  } else if (event.keyCode === keys.ROTATE_LEFT) {
+	    console.log('rotate LEFT!');
+	    rotateLeft();
+	  } else if (event.keyCode === keys.ROTATE_RIGHT) {
+	    console.log('rotate right!');
+	    rotateRight();
+	  } 
+	  // else if (event.keyCode === keys.ROTATE_LEFT) {
+	  //   console.log('UP!');
+	  //   rotateUp();
+	  // } else if ()
+	}
+
+	function rotateLeft (angle) {
+	  // if (angle === undefined) { angle = getAutoRotationAngle(); }
+	  thetaDelta -= angle;
+	}
+
+	function rotateRight (angle) {
+	  // if (angle === undefined) { angle = getAutoRotationAngle(); }
+	  thetaDelta += angle;
+	}
+
+	function rotateUp ( angle ) {
+	  phiDelta -= angle;
+	};
+
+	function rotateDown ( angle ) {
+	  phiDelta += angle;
+	};
+
+	function update () {
+
+	  var position = this.object.position;
+	  var offset = position.clone().sub( this.target );
+
+	  // angle from z-axis around y-axis
+
+	  var theta = Math.atan2( offset.x, offset.z );
+
+	  // angle from y-axis
+
+	  var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
+
+	  if ( this.autoRotate ) {
+
+	    this.rotateLeft( getAutoRotationAngle() );
+
+	  }
+
+	  theta += thetaDelta;
+	  phi += phiDelta;
+
+	  // restrict phi to be between desired limits
+	  phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
+
+	  // restrict phi to be betwee EPS and PI-EPS
+	  phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
+
+	  var radius = offset.length() * scale;
+
+	  // restrict radius to be between desired limits
+	  radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
+	  
+	  // move target to panned location
+	  this.target.add( pan );
+
+	  offset.x = radius * Math.sin( phi ) * Math.sin( theta );
+	  offset.y = radius * Math.cos( phi );
+	  offset.z = radius * Math.sin( phi ) * Math.cos( theta );
+
+	  position.copy( this.target ).add( offset );
+
+	  this.object.lookAt( this.target );
+
+	  thetaDelta = 0;
+	  phiDelta = 0;
+	  scale = 1;
+	  pan.set(0,0,0);
+
+	  if ( lastPosition.distanceTo( this.object.position ) > 0 ) {
+
+	    this.dispatchEvent( changeEvent );
+
+	    lastPosition.copy( this.object.position );
+
+	  }
+
+	};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	function animate() {
 		requestAnimationFrame( animate );
 		// if (killControls) 
