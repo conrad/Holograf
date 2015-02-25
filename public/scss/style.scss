@@ -42,7 +42,11 @@ body {
 }
 #three-scene {
   background-color: #333333;
-  // max-height: 
+  position: absolute;
+  top: 40px; /* Header Height */
+  bottom: 0; /* Footer Height */
+  width: 100%;
+
 }
 
 #three-modal{
