@@ -1,14 +1,14 @@
 // module.exports = theatre;
+var theatre = {scenePaused:false, expanded:false};
 
-var theatre={scenePaused:false,expanded:false};
 
 theatre.display = function(allData){	
 	var composite, container, controls, camera, scene, renderer, particleLight, tween, visualTimeline;
 	var windowHalfX = window.innerWidth / 2;
 	var windowHalfY = window.innerHeight / 2;
 	var centerPoint = new THREE.Vector3(0,0,5000);
-	var scopes=utils.extractScopes(allData);
-	var timeline=utils.parseTimeline(allData.programSteps,allData.components);
+	var scopes = utils.extractScopes(allData);
+	var timeline = utils.parseTimeline(allData.programSteps, allData.components);
 	
 	init(timeline);
 	animate();
@@ -22,11 +22,12 @@ theatre.display = function(allData){
 		camera.position.z = 5000;
 		camera.position.y = 0;
 		camera.position.x = -4000;
+		// var target = new THREE.Vector3(4999,0,-4000);
+
 		controls = new customControls(camera, container);
-		// controls = new THREE.CustomControls(camera, container);
+		// controls = new THREE.OrbitControls(camera, target, container);
 		controls.addEventListener( 'change', render );  
 		// controls = makeControls(camera, container);
-		// controls = new THREE.OrbitControls(camera, container);
 
 		scene = new THREE.Scene();
 		particleLight = subroutines.TimeLight();
@@ -117,11 +118,12 @@ theatre.display = function(allData){
 	
 	////////////////////
 	// API 
-	var target = new THREE.Vector3();
+	// var target = new THREE.Vector3();
+	var target = new THREE.Vector3(4999,0,-4000);
 	var zoomSpeed = 1.0;
 	var minDistance = 0;
 	var maxDistance = Infinity;
-	var rotateSpeed = 1.0;
+	var rotateSpeed = 0.05;
 	var keyPanSpeed = 7.0; // pixels moved per arrow key push
 	var minPolarAngle = 0;  // vertical orbit range, upper & lower limits.
 	var maxPolarAngle = Math.PI;   // Range is 0 to Math.PI radians.
@@ -170,107 +172,123 @@ theatre.display = function(allData){
 	// var state = STATE.NONE;
 
 
+	////////////////////
+	// Events
+	var changeEvent = { type: 'change' };
+
+
 	function onKeyDown (event) {
 		console.log('onKeyDown CALLED');
-	  if ( controlsEnabled === false ) { 
-	  	console.log('controls not enabled');
-	  	return; 
-	  }
+	  if ( controlsEnabled === false ) { console.log('controls not enabled'); return; }
+	  var needUpdate = false;
 
 	  if (event.keyCode === keys.ROTATE_UP) {
 	    console.log('rotate UP!');
 	    rotateUp();
+	    needUpdate = true;
 	  } else if (event.keyCode === keys.ROTATE_DOWN) {
 	    console.log('rotate DOWN!');
 	    rotateDown();
+	    needUpdate = true;
 	  } else if (event.keyCode === keys.ROTATE_LEFT) {
 	    console.log('rotate LEFT!');
 	    rotateLeft();
+	    needUpdate = true;
 	  } else if (event.keyCode === keys.ROTATE_RIGHT) {
 	    console.log('rotate right!');
 	    rotateRight();
+	    needUpdate = true;
 	  } 
 	  // else if (event.keyCode === keys.ROTATE_LEFT) {
 	  //   console.log('UP!');
 	  //   rotateUp();
 	  // } else if ()
+
+	  if (needUpdate) { update(); }
 	}
 
+
 	function rotateLeft (angle) {
-	  // if (angle === undefined) { angle = getAutoRotationAngle(); }
+	  if (angle === undefined) { 
+	  	angle = rotateSpeed; 
+	  }
+	  // camera.rotation.y += 0.5;
 	  thetaDelta -= angle;
 	}
 
 	function rotateRight (angle) {
-	  // if (angle === undefined) { angle = getAutoRotationAngle(); }
+	  if (angle === undefined) { 
+	  	angle = rotateSpeed; 
+	  }
 	  thetaDelta += angle;
 	}
 
 	function rotateUp ( angle ) {
+	  if (angle === undefined) { 
+	  	angle = rotateSpeed; 
+	  }
 	  phiDelta -= angle;
 	};
 
 	function rotateDown ( angle ) {
+	  if (angle === undefined) { 
+	  	angle = rotateSpeed; 
+	  }
 	  phiDelta += angle;
 	};
 
-	function update () {
 
-	  var position = this.object.position;
-	  var offset = position.clone().sub( this.target );
+	// Look here for panning & zoom:
+	//	http://threejs.org/examples/js/controls/OrbitControls.js
+
+	function update () {
+		// debugger;
+
+		// Maybe add these to get the direction of the camera!!
+					// http://stackoverflow.com/questions/14813902/three-js-get-the-direction-in-which-the-camera-is-looking
+			// camera.lookAt( point );			// direct the camera
+			// var vector = new THREE.Vector3( 0, 0, -1 );		// create a vector
+			// vector.applyQuaternion( camera.quaternion );		// point vector in same direction as camera
+			// angle = vector.angleTo( target.position );
+
+
+
+
+	  // var position = camera.position;
+	  var offset = target.clone().sub(camera.position);
 
 	  // angle from z-axis around y-axis
-
 	  var theta = Math.atan2( offset.x, offset.z );
-
 	  // angle from y-axis
-
 	  var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
-
-	  if ( this.autoRotate ) {
-
-	    this.rotateLeft( getAutoRotationAngle() );
-
-	  }
-
 	  theta += thetaDelta;
 	  phi += phiDelta;
-
-	  // restrict phi to be between desired limits
-	  phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
-
-	  // restrict phi to be betwee EPS and PI-EPS
-	  phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
+	  console.log('phi:',phi, 'theta:',theta);
 
 	  var radius = offset.length() * scale;
+	  // restrict radius to be between desired limits  ---- HOWEVER, currently, maxDistance=Infinitiy
+	  radius = Math.max(minDistance, Math.min(maxDistance, radius) );
 
-	  // restrict radius to be between desired limits
-	  radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
-	  
 	  // move target to panned location
-	  this.target.add( pan );
+	  // target.add(pan);
 
 	  offset.x = radius * Math.sin( phi ) * Math.sin( theta );
 	  offset.y = radius * Math.cos( phi );
 	  offset.z = radius * Math.sin( phi ) * Math.cos( theta );
-
-	  position.copy( this.target ).add( offset );
-
-	  this.object.lookAt( this.target );
+	  console.log('target pre-offset:', target);
+	  target.add(offset);  
+	  console.log('target post-offset:', target);
+	  camera.lookAt(target);
 
 	  thetaDelta = 0;
 	  phiDelta = 0;
 	  scale = 1;
 	  pan.set(0,0,0);
 
-	  if ( lastPosition.distanceTo( this.object.position ) > 0 ) {
-
-	    this.dispatchEvent( changeEvent );
-
-	    lastPosition.copy( this.object.position );
-
+	  if ( lastPosition.distanceTo( target ) > 0 ) {
+	    // controls.dispatchEvent( changeEvent );
+	    lastPosition.copy( target );
 	  }
-
 	};
 
 

@@ -453,7 +453,7 @@ var customControls = function ( object, domElement ) {
   // this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
   // this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
 
-  document.addEventListener( 'keydown', onKeyDown, false );
+  // document.addEventListener( 'keydown', onKeyDown, false );
 
   // this.domElement.addEventListener( 'touchstart', touchstart, false );
   // this.domElement.addEventListener( 'touchend', touchend, false );
