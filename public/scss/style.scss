@@ -22,6 +22,10 @@ body {
   padding-bottom: 0;
   height: auto;
 }
+// .active {
+//   background-color: #333333;
+//   color: white;
+// }
 .visualButton {
   margin: 5px 5px 5px 10px;
   display: inline;
@@ -43,7 +47,7 @@ body {
 #three-scene {
   background-color: #333333;
   position: absolute;
-  top: 40px; /* Header Height */
+  top: 44px; /* Header Height */
   bottom: 0; /* Footer Height */
   width: 100%;
 

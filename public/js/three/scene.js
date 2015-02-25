@@ -47,7 +47,7 @@ theatre.display = function(allData){
 		renderer = new THREE.WebGLRenderer({antialias:true});
 			renderer.setPixelRatio( window.devicePixelRatio );
 			// renderer.setSize( window.innerWidth, window.innerHeight-$(container).offset().top );
-			renderer.setSize( window.innerWidth, window.innerHeight - 86);  // hard-coded top offset
+			renderer.setSize( window.innerWidth, window.innerHeight - 88);  // hard-coded top offset
 			renderer.setClearColor( 0x333333, 1);
 			container.appendChild( renderer.domElement );
 

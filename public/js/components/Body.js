@@ -27,10 +27,10 @@ module.exports = React.createClass({
       <div className="appContainer">
         <div className="navbar-brand">SuspiciousPi</div>
         <TabbedArea defaultActiveKey={1}>
-          <TabPane eventKey={1} tab="Code">
+          <TabPane className='tab' eventKey={1} tab="Code">
             <CodeEditor {...this.props} />
           </TabPane>
-          <TabPane eventKey={2} tab="3D Visualization">
+          <TabPane className='tab' eventKey={2} tab="3D Visualization">
             <Visual3D data={this.props.data} compiledStatus={this.props.compiledStatus} />
           </TabPane>
         </TabbedArea>
