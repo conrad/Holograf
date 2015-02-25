@@ -1,7 +1,6 @@
 // module.exports = theatre;
 var theatre = {scenePaused:false, expanded:false,controlsEnabled:true};
 
-
 theatre.display = function(allData){	
 	var composite, container, controls, camera, scene, renderer, particleLight, tween, visualTimeline;
 	var windowHalfX = window.innerWidth / 2;
@@ -23,6 +22,10 @@ theatre.display = function(allData){
 		camera.position.z = 5000;
 		camera.position.y = 0;
 		camera.position.x = -4000;
+		camera.lookAt(target);
+
+		// make camera global
+		theatre.camera = camera;
 
 		controls = new customControls(camera, container);
 		// controls = new THREE.OrbitControls(camera, target, container);
@@ -116,109 +119,54 @@ theatre.display = function(allData){
 ///////////////////////////////////////////////////////////
 // CONTROLS
 ///////////////////////////////////////////////////////////
-	
-	////////////////////
-	// API 
-	var rotateSpeed = 0.05;
-	// Toggle controls, based on tab selected
-	var controlsEnabled = true;
+
 	var keys = { 
 	  ROTATE_LEFT: 37, 
 	  ROTATE_UP: 38, 
 	  ROTATE_RIGHT: 39, 
 	  ROTATE_DOWN: 40,
-	  PAN_LEFT: 65,
-	  PAN_RIGHT: 68,
-	  PAN_DOWN: 83,
-	  PAN_UP: 87,
+	  PAN_LEFT: 65,				// a
+	  PAN_RIGHT: 68,			// d
+	  PAN_DOWN: 83,				// s
+	  PAN_UP: 87,					// w
+	  ZOOM_IN: 82,				// r
+	  ZOOM_OUT: 70,				// f
 	  EXPAND: 13,     // enter 
 	  PAUSE: 32,      // spacebar
 	  PAN_LOCK: 16    // shift
 	};
-
-	// radians = degrees * (Math.PI/180)
-	// degrees = radians * (180/Math.PI)
-
-	///////////////////
-	// Internals 
-	var scope = this;
-	var phiDelta = 0;
-	var thetaDelta = 0;
-	var scale = 1;
-
-	var pan = new THREE.Vector3();
-	var lastPosition = new THREE.Vector3();
-
-	////////////////////
-	// Events
-	var changeEvent = { type: 'change' };
+	var moveSpeed = 25;
+	var rotationSpeed = 0.15;
 
 	function onKeyDown (event) {
-		console.log('onKeyDown CALLED');
-	  if ( scope.controlsEnabled === false ) { 
-	  	console.log('controls not enabled'); return; }
-	  var needUpdate = false;
-
 	  if (event.keyCode === keys.ROTATE_UP) {
-	    console.log('rotate UP!');
-	    rotateUp();
-	    needUpdate = true;
+	    camera.rotation.y += rotationSpeed;
 	  } else if (event.keyCode === keys.ROTATE_DOWN) {
-	    console.log('rotate DOWN!');
-	    rotateDown();
-	    needUpdate = true;
+	    camera.rotation.y -= rotationSpeed;
 	  } else if (event.keyCode === keys.ROTATE_LEFT) {
-	    console.log('rotate LEFT!');
-	    rotateLeft();
-	    needUpdate = true;
+	    camera.rotation.z += rotationSpeed;
 	  } else if (event.keyCode === keys.ROTATE_RIGHT) {
-	    console.log('rotate right!');
-	    rotateRight();
-	    needUpdate = true;
-	  } 
-	  // else if (event.keyCode === keys.ROTATE_LEFT) {
-	  //   console.log('UP!');
-	  //   rotateUp();
-	  // } else if ()
+	    camera.rotation.z -= rotationSpeed;
 
-	  if (needUpdate) { update(); }
-	}
+	  } else if (event.keyCode === keys.PAN_UP) {
+	    console.log('pan up');
+	    camera.position.y += moveSpeed;
+	  } else if (event.keyCode === keys.PAN_DOWN) {
+	    camera.position.y -= moveSpeed;
+	  } else if (event.keyCode === keys.PAN_RIGHT) {
+	    camera.position.z += moveSpeed;
+    } else if (event.keyCode === keys.PAN_LEFT) {
+      camera.position.z -= moveSpeed;
+    } else if (event.keyCode === keys.ZOOM_IN) {
+      camera.position.x += moveSpeed;
 
-
-	function rotateLeft (angle) {
-	  if (angle === undefined) { 
-	  	angle = rotateSpeed; 
-	  }
-	  // camera.rotation.y += 0.5;
-	  thetaDelta -= angle;
-	}
-	function rotateRight (angle) {
-	  if (angle === undefined) { 
-	  	angle = rotateSpeed; 
-	  }
-	  thetaDelta += angle;
-	}
-	function rotateUp ( angle ) {
-	  if (angle === undefined) { 
-	  	angle = rotateSpeed; 
-	  }
-	  phiDelta -= angle;
-	}
-	function rotateDown ( angle ) {
-	  if (angle === undefined) { 
-	  	angle = rotateSpeed; 
-	  }
-	  phiDelta += angle;
-	}
-
-	function update () {
+    } else if (event.keyCode === keys.EXPAND) {
+      expand();
+    } else if (event.keyCode === keys.PAUSE) {
+      pause();
+    }
 
 	}
-
-
-
-
-
 
 
 
@@ -226,12 +174,6 @@ theatre.display = function(allData){
 
 	function animate() {
 		requestAnimationFrame( animate );
-		// if (killControls) {
-		//   controls.enabled = false;
-		// } else {
-		//   controls.update(controlsObj.delta);
-		//   controls.update();
-		// }
 		render();
 	}
 
@@ -256,7 +198,7 @@ theatre.display = function(allData){
 
 
 	function render() {
-		camera.lookAt(particleLight);
+		// camera.lookAt(target);
 
 		TWEEN.update();
 		renderer.render( scene, camera );
