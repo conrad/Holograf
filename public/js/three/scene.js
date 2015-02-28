@@ -1,7 +1,7 @@
 var theatre = {
 	scenePaused: false, 
 	expanded: false, 
-	controlsEnabled: true, 
+	controlsEnabled: true, 		// toggle based on tab, link controls to
 	nodeView: false
 };
 
@@ -11,13 +11,14 @@ theatre.display=function(allData){
 	var windowHalfY = window.innerHeight / 2;
 	var scopes = utils.extractScopes(allData);
 	var timeline = utils.parseTimeline(allData.programSteps, allData.components);
+
+	theatre.timeline = timeline;
 	
 	init(timeline);
 	animate();
 	
 	function init(data) {
 
-		// PerspectiveCamera method args: (field of view angle, aspectRatio, near, far)
 		
 		scene = new THREE.Scene();
 		
@@ -32,6 +33,7 @@ theatre.display=function(allData){
 		scene.add( particleLight );
 
 		composite = subroutines.Composite(data,scopes);
+		theatre.maxSize = composite.maxSize;
 		scene.add( composite );
 
 
@@ -42,12 +44,14 @@ theatre.display=function(allData){
 		subroutines.dotGrid(scene,data,scopes,composite.maxSize);
 		subroutines.skybox(scene, composite.maxSize);
 
+		// PerspectiveCamera   method args: (field of view angle, aspectRatio, near, far)
 		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
-		camera.position.x = -2000;
-		camera.position.y = 2000;
+		var camDistPartial = composite.maxSize / 2;
+		camera.position.x = -camDistPartial;
+		camera.position.y = camDistPartial;
 		camera.position.z = composite.maxSize / 2;
 		var target = new THREE.Vector3(0, 0, composite.maxSize/2);
-		// camera.lookAt(target);
+		// camera.lookAt(target);  // PLACED IN OrbitControls.js
 
 		controls = new THREE.OrbitControls(camera, container, target);
 		// controls.addEventListener( 'change', render );
@@ -71,11 +75,11 @@ theatre.display=function(allData){
 		container.appendChild(renderer.domElement);
 
 		//modal
-		modal=createModal();
+		// modal = createModal();
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
 		window.addEventListener( 'resize', onWindowResize, false );
-		window.addEventListener( 'mousedown', onMouseDown, false);
+		window.addEventListener( 'mouseup', onMouseUp, false);
 	}
 
 	function onWindowResize() {
@@ -88,14 +92,16 @@ theatre.display=function(allData){
 	}
 
 	function onMouseMove( e ) {
+
 		var vector = new THREE.Vector3();
 		var raycaster = new THREE.Raycaster();
 		var dir = new THREE.Vector3();
 
-		//check the type of camera
-		//extract that offset into an external variable that doesn't have to be recalculated every time... later
+		//extract that offset into external variable that doesn't have to be recalculated every time... later
 		var x =  ( event.clientX / window.innerWidth ) * 2 - 1;
 		var y = - ( (event.clientY-$(container).offset().top ) / window.innerHeight ) * 2 + 1;
+
+		//check the type of camera
 		if ( camera instanceof THREE.OrthographicCamera ) {
 	    vector.set( x, y, - 1 ); // z = - 1 important!
 	    vector.unproject( camera );
@@ -106,23 +112,21 @@ theatre.display=function(allData){
 	    vector.unproject( camera );
 	    raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 		}
-		
+
 		if (composite){
 			var intersects = raycaster.intersectObjects( composite.children, true );	
-			if (intersects.length<1){
-				//Luke this is why the modal only appears on mouseover
-				//if was you all along, you idiot
-				if (document.getElementById("modal-canvas")){
-					document.body.removeChild(document.getElementById("modal-canvas"));
-				}
-				/*
+
 				$("#three-modal").hide();
-				*/
+
 				composite.children.forEach(function( shape ) {
 					shape.material.color.setRGB( shape.grayness, shape.grayness, shape.grayness );
 					shape.material.opacity = 0;
 				});
+
 			} else {
+				// If not expanded, do nothing
+				if (!theatre.expanded) return;
+
 				var selectedId=intersects[0].object.componentData.id;
 				/*
 				$("#three-modal").html( utils.displayText(intersects[0].object) );
@@ -139,28 +143,15 @@ theatre.display=function(allData){
 						shape.material.color.setRGB( 1, 1, 0 );
 					}
 				});
-				
-				//raphael code here?
-				if ($("#modal-canvas").length===0){
-					modal = createModal();
-					//utils.modal.donut(modal,event.clientX,event.clientY,intersects[0]);
-					utils.modal.headline(modal,intersects[0]);
-					
-					selectHalo.position.x=intersects[0].object.position.x;
-					selectHalo.position.y=intersects[0].object.position.y-150;
-					selectHalo.position.z=intersects[0].object.position.z;
-
-					utils.rippleList(modal,utils.allValues(timeline,selectedId));
-				} 
-				///
-				
 			}
-		}
-		
-		
+
+		}		
 	}
 
-	function onMouseDown () {
+	function onMouseUp () {
+
+		if (theatre.expanded === false) return;
+
 		var cameraSpeed = 1500;
 
 		var vector = new THREE.Vector3();
@@ -189,6 +180,10 @@ theatre.display=function(allData){
 			if (intersects.length < 1 && theatre.nodeView) {  
 				new TWEEN.Tween(camera.position).to(theatre.lastPosition, cameraSpeed).start();
 				new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, cameraSpeed).start();
+
+				if (document.getElementById("modal-canvas")){
+					document.body.removeChild(document.getElementById("modal-canvas"));
+				}
 				theatre.nodeView = false;
 
 			// if an object is clicked, enter nodeView and zoom in
@@ -197,9 +192,10 @@ theatre.display=function(allData){
 				if (!theatre.nodeView) {
 					theatre.lastPosition = new THREE.Vector3().copy( camera.position );
 					theatre.lastRotation = new THREE.Quaternion().copy( camera.rotation );
-
 				}
 
+				theatre.currentNode = intersects[0];
+				console.log('theatre.currentNode:', theatre.currentNode);
 				// final camera position
 				var newX = intersects[0].object.position.x - 800;			
 				var newY = intersects[0].object.position.y + 800;
@@ -219,8 +215,15 @@ theatre.display=function(allData){
 				new TWEEN.Tween(camera.position).to(targetPosition, cameraSpeed).start();
 				new TWEEN.Tween( camera.rotation ).to(endRotation, cameraSpeed).start();
 				nextCamera = null;
+
+				// raphael code here?
+				if ($("#modal-canvas").length===0){
+					modal = createModal();
+					utils.modal.donut(modal,event.clientX,event.clientY,intersects[0]);
+					utils.modal.headline(modal,intersects[0]);
+				} 
+
 				theatre.nodeView = true;
-				// console.log('theatre.lastPosition:', theatre.lastPosition);
 
 			}
 		}
@@ -230,6 +233,7 @@ theatre.display=function(allData){
 	function createModal(){
 		
 	  var canvas=document.createElement("DIV");
+	  // TODO refactor these into CSS
 	  canvas.id="modal-canvas";
 	  canvas.style.position="fixed";
 	  canvas.style.top="0px";
@@ -249,6 +253,15 @@ theatre.display=function(allData){
 		render();
 	}
 
+	theatre.nextNode = function() {
+		console.log('index:',theatre.currentNode.object.componentData.timelineIndex);
+		console.log('theatre.timeline:', theatre.timeline);
+	};
+
+	theatre.prevNode = function() {
+
+	};
+
 	theatre.pause=function(){
 		theatre.scenePaused ? particleLight.tween.start() : particleLight.tween.stop();
 		theatre.scenePaused=!theatre.scenePaused;
@@ -260,6 +273,18 @@ theatre.display=function(allData){
 			composite.children[i][action].start();
 			if (action==='collapse'){
 				visualTimeline.hide.start();
+				// gray out all shapes
+				$("#three-modal").hide();
+				composite.children.forEach(function( shape ) {
+					shape.material.color.setRGB( shape.grayness, shape.grayness, shape.grayness );
+					shape.material.opacity = 0;
+				});
+				// return to lastposition - not working right now
+				// if (theatre.nodeView) {
+				// 	new TWEEN.Tween(camera.position).to(theatre.lastPosition, cameraSpeed).start();
+				// 	new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, cameraSpeed).start();
+				// }
+
 			} else {
 				visualTimeline.show.start();
 			}

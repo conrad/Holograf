@@ -45,7 +45,7 @@ THREE.OrbitControls = function ( object, domElement, target ) {
 
   // Limits to how far you can dolly in and out
   this.minDistance = 0;
-  this.maxDistance = Infinity;
+  this.maxDistance = theatre.maxSize;    // Infinity;  // 
 
   // Set to true to disable this control
   this.noRotate = false;
@@ -132,27 +132,17 @@ THREE.OrbitControls = function ( object, domElement, target ) {
   var endEvent = { type: 'end'};
 
   this.rotateLeft = function ( angle ) {
-
     if ( angle === undefined ) {
-
       angle = getAutoRotationAngle();
-
     }
-
     thetaDelta -= angle;
-
   };
 
   this.rotateUp = function ( angle ) {
-
     if ( angle === undefined ) {
-
       angle = getAutoRotationAngle();
-
     }
-
     phiDelta -= angle;
-
   };
 
   // pass in distance in world space to move left
@@ -279,6 +269,10 @@ THREE.OrbitControls = function ( object, domElement, target ) {
 
     // restrict radius to be between desired limits
     radius = Math.max( this.minDistance, Math.min( this.maxDistance, radius ) );
+    // console.log('radius:',radius, 
+    //   'this.minDistance:', this.minDistance, 
+    //   'Math.min( this.maxDistance, radius:',Math.min( this.maxDistance, radius), 'this.maxDistance:', this.maxDistance
+    // );
 
     // move target to panned location
     this.target.add( pan );
@@ -328,25 +322,18 @@ THREE.OrbitControls = function ( object, domElement, target ) {
   };
 
   this.getPolarAngle = function () {
-
     return phi;
-
   };
 
   this.getAzimuthalAngle = function () {
-
     return theta
-
   };
 
   function getAutoRotationAngle() {
-
     return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
-
   }
 
   function getZoomScale() {
-
     return Math.pow( 0.95, scope.zoomSpeed );
 
   }
@@ -495,6 +482,25 @@ THREE.OrbitControls = function ( object, domElement, target ) {
   function onKeyDown( event ) {
 
     if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
+
+    // change key controls if you're in nodeView
+    if ( theatre.nodeView ) {
+
+      switch ( event.keyCode ) {
+
+        case scope.keys.LEFT:
+          theatre.prevNode();
+          break;
+
+        case scope.keys.RIGHT:
+          // scope.pan( - scope.keyPanSpeed, 0 );
+          // scope.update();
+          theatre.nextNode();
+          break;
+      }
+
+      return;
+    }
 
     switch ( event.keyCode ) {
 
@@ -682,4 +688,3 @@ THREE.OrbitControls = function ( object, domElement, target ) {
 };
 
 THREE.OrbitControls.prototype = Object.create( THREE.EventDispatcher.prototype );
-THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;

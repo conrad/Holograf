@@ -16,7 +16,7 @@ utils.parseTimeline=function(timeline,components){
   for (var i=0;i<timeline.length;i++){
     //deep clone to avoid altering the glossary
     timeline[i].component={};
-    //timeline[i].component.timelineIndex=i;
+    timeline[i].component.timelineIndex = i;
     for (var key in timeline[i]){
       if (key==='component'){continue;}
       timeline[i].component[key]=timeline[i][key];
@@ -86,9 +86,9 @@ utils.modal.headline=function(canvas,obj){
     .attr({"fill":"#fff","font-size":"40px","text-anchor":"start"})
     .animate({x:10},600,"<>");
   var bbox=text.getBBox();
-  var backboard=c.rect(-1000,bbox.y,Math.max(bbox.width,300),bbox.height)
-    .attr({"fill":"#000",opacity:0.8})
-    .animate({x:0},600,"<>");
+  var backboard=c.rect(0,bbox.y,bbox.width,bbox.height)
+    .attr({"fill":"#000",opacity:0})
+    .animate({opacity:0.7},1000);
   text.toFront();
 }
 
