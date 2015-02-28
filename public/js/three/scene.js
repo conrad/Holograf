@@ -254,8 +254,15 @@ theatre.display=function(allData){
 	}
 
 	theatre.nextNode = function() {
-		console.log('index:',theatre.currentNode.object.componentData.timelineIndex);
-		console.log('theatre.timeline:', theatre.timeline);
+		var currentIndex = theatre.currentNode.object.componentData.timelineIndex;
+		// console.log('index:',theatre.currentNode.object.componentData.timelineIndex);
+		// console.log('composite:',composite);
+		console.log('how many times?');
+		for (var i = 0; i < composite.children.length; i++) {
+			if (currentIndex === composite.children[i].componentData.timelineIndex) {
+				console.log('the next one!', composite.children[i]);
+			}
+		}
 	};
 
 	theatre.prevNode = function() {

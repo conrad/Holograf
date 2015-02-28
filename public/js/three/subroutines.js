@@ -18,6 +18,7 @@ subroutines.Fun=function(composite, opts){
 
 	object.grayness=grayness;
 	object.componentData=opts.componentData;
+	object.componentData.primary=true;
 	object=utils.tweenify(object,{z1: z1, z2:z2, x1:opts.x1, x2:opts.x2} );
 		
 	object.position.set( x, 0, z1 );
@@ -265,6 +266,7 @@ subroutines.Conditional=function(composite,opts){
 
 	object.grayness=grayness;
 	object.componentData=opts.componentData;
+	object.componentData.primary=true;
 	object=utils.tweenify(object,{z1: z1, z2:z2, x1:opts.x1, x2:opts.x2} );
 		
 		
