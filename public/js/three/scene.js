@@ -113,7 +113,8 @@ theatre.display=function(allData){
 	    raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 		}
 
-		if (composite){
+		if (composite) {
+			
 			var intersects = raycaster.intersectObjects( composite.children, true );	
 
 				$("#three-modal").hide();
@@ -123,30 +124,28 @@ theatre.display=function(allData){
 					shape.material.opacity = 0;
 				});
 
-			} else {
-				// If not expanded, do nothing
-				if (!theatre.expanded) return;
+		} else {
+			// If not expanded, do nothing
+			if (!theatre.expanded) return;
 
-				var selectedId=intersects[0].object.componentData.id;
-				/*
-				$("#three-modal").html( utils.displayText(intersects[0].object) );
-				if (!$("#three-modal").is(":visible") ){
-					$("#three-modal").fadeIn();
-				}
-				*/
-				intersects[0].object.material.color.setRGB( 1, 1, 0 );
-				composite.children.forEach(function( shape ) {
-					if (shape.material.hasOwnProperty('opacity') ){
-						shape.material.opacity = 1;
-					}
-					if (shape.componentData.id===selectedId){
-						shape.material.color.setRGB( 1, 1, 0 );
-					}
-				});
+			var selectedId=intersects[0].object.componentData.id;
+			/*
+			$("#three-modal").html( utils.displayText(intersects[0].object) );
+			if (!$("#three-modal").is(":visible") ){
+				$("#three-modal").fadeIn();
 			}
-
-		}		
-	}
+			*/
+			intersects[0].object.material.color.setRGB( 1, 1, 0 );
+			composite.children.forEach(function( shape ) {
+				if (shape.material.hasOwnProperty('opacity') ){
+					shape.material.opacity = 1;
+				}
+				if (shape.componentData.id===selectedId){
+					shape.material.color.setRGB( 1, 1, 0 );
+				}
+			});
+		}
+	}		
 
 	function onMouseUp () {
 
@@ -174,6 +173,7 @@ theatre.display=function(allData){
 		}
 
 		if (composite){
+
 			var intersects = raycaster.intersectObjects( composite.children, true );	
 
 			//  if object is not clicked and not in nodeView, return to prior position
