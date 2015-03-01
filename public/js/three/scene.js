@@ -1,7 +1,7 @@
 var theatre = {
 	scenePaused: false, 
 	expanded: false, 
-	controlsEnabled: true, 		// toggle based on tab, link controls to
+	controlsEnabled: true, 	//toggle based on tab, link controls to
 	nodeView: false
 };
 
@@ -55,12 +55,9 @@ theatre.display=function(allData){
 
 		controls = new THREE.OrbitControls(camera, container, target);
 		// controls.addEventListener( 'change', render );
-
 		// theatre.camera = camera;
 		// theatre.target = target;
-		// scene.add(subroutines.Axes()[0]);
-		// scene.add(subroutines.Axes()[1]);
-		// scene.add(subroutines.Axes()[2]);
+
 		selectHalo = subroutines.SelectHalo(scene);
 		scene.add(selectHalo);
 
@@ -74,8 +71,9 @@ theatre.display=function(allData){
 		container = document.getElementById('three-scene');
 		container.appendChild(renderer.domElement);
 
-		//modal
+		//modal 
 		// modal = createModal();
+
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
 		window.addEventListener( 'resize', onWindowResize, false );
@@ -117,35 +115,59 @@ theatre.display=function(allData){
 			
 			var intersects = raycaster.intersectObjects( composite.children, true );	
 
-				$("#three-modal").hide();
+			if (intersects.length<1){
+
+			  // Remove modal only appears on mouseover
+			  if (document.getElementById("modal-canvas")){
+			    document.body.removeChild(document.getElementById("modal-canvas"));
+			  }
+
+				// $("#three-modal").hide();
 
 				composite.children.forEach(function( shape ) {
 					shape.material.color.setRGB( shape.grayness, shape.grayness, shape.grayness );
 					shape.material.opacity = 0;
 				});
 
-		} else {
-			// If not expanded, do nothing
-			if (!theatre.expanded) return;
+			// Intersects.length >= 1
+			} else {
+				// If not expanded, do nothing
+				if (!theatre.expanded) return;
 
-			var selectedId=intersects[0].object.componentData.id;
-			/*
-			$("#three-modal").html( utils.displayText(intersects[0].object) );
-			if (!$("#three-modal").is(":visible") ){
-				$("#three-modal").fadeIn();
+				var selectedId=intersects[0].object.componentData.id;
+				/*
+				$("#three-modal").html( utils.displayText(intersects[0].object) );
+				if (!$("#three-modal").is(":visible") ){
+					$("#three-modal").fadeIn();
+				}
+				*/
+				intersects[0].object.material.color.setRGB( 1, 1, 0 );
+				composite.children.forEach(function( shape ) {
+					if (shape.material.hasOwnProperty('opacity') ){
+						shape.material.opacity = 1;
+					}
+					if (shape.componentData.id===selectedId){
+						shape.material.color.setRGB( 1, 1, 0 );
+					}
+				});
+
+				//raphael code here?
+				if ($("#modal-canvas").length===0){
+				  modal = createModal();
+				  //utils.modal.donut(modal,event.clientX,event.clientY,intersects[0]);
+				  utils.modal.headline(modal,intersects[0]);
+				  
+				  selectHalo.position.x=intersects[0].object.position.x;
+				  selectHalo.position.y=intersects[0].object.position.y-150;
+				  selectHalo.position.z=intersects[0].object.position.z;
+
+				  utils.rippleList(modal,utils.allValues(timeline,selectedId));
+				} 
+
+
 			}
-			*/
-			intersects[0].object.material.color.setRGB( 1, 1, 0 );
-			composite.children.forEach(function( shape ) {
-				if (shape.material.hasOwnProperty('opacity') ){
-					shape.material.opacity = 1;
-				}
-				if (shape.componentData.id===selectedId){
-					shape.material.color.setRGB( 1, 1, 0 );
-				}
-			});
-		}
-	}		
+		}		
+	}
 
 	function onMouseUp () {
 
@@ -216,15 +238,9 @@ theatre.display=function(allData){
 				new TWEEN.Tween( camera.rotation ).to(endRotation, cameraSpeed).start();
 				nextCamera = null;
 
-				// raphael code here?
-				if ($("#modal-canvas").length===0){
-					modal = createModal();
-					utils.modal.donut(modal,event.clientX,event.clientY,intersects[0]);
-					utils.modal.headline(modal,intersects[0]);
-				} 
+				// raphael code here???
 
 				theatre.nodeView = true;
-
 			}
 		}
 	}
@@ -257,9 +273,10 @@ theatre.display=function(allData){
 		var currentIndex = theatre.currentNode.object.componentData.timelineIndex;
 		// console.log('index:',theatre.currentNode.object.componentData.timelineIndex);
 		// console.log('composite:',composite);
-		console.log('how many times?');
+		console.log('theatre.nextNode called!');
 		for (var i = 0; i < composite.children.length; i++) {
-			if (currentIndex === composite.children[i].componentData.timelineIndex) {
+			if ( (currentIndex+1) === composite.children[i].componentData.timelineIndex && composite.children[i].componentData.primary) {
+				console.log(composite.children[i].componentData.primary);
 				console.log('the next one!', composite.children[i]);
 			}
 		}
