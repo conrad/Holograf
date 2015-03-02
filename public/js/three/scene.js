@@ -2,7 +2,8 @@ var theatre = {
 	scenePaused: false, 
 	expanded: false, 
 	controlsEnabled: true, 	//toggle based on tab, link controls to
-	nodeView: false
+	nodeView: false,
+	cameraSpeed: 1500
 };
 
 theatre.display=function(allData){	
@@ -57,6 +58,10 @@ theatre.display=function(allData){
 		// controls.addEventListener( 'change', render );
 		// theatre.camera = camera;
 		// theatre.target = target;
+		theatre.initCamera = {
+			'position': new THREE.Vector3().copy( camera.position ), 
+			'rotation': new THREE.Quaternion().copy( camera.rotation )};
+
 
 		selectHalo = subroutines.SelectHalo(scene);
 		scene.add(selectHalo);
@@ -90,6 +95,8 @@ theatre.display=function(allData){
 	}
 
 	function onMouseMove( e ) {
+
+		e.preventDefault();
 
 		var vector = new THREE.Vector3();
 		var raycaster = new THREE.Raycaster();
@@ -169,11 +176,10 @@ theatre.display=function(allData){
 		}		
 	}
 
-	function onMouseUp () {
-
+	function onMouseUp ( e ) {
+		
+		e.preventDefault();
 		if (theatre.expanded === false) return;
-
-		var cameraSpeed = 1500;
 
 		var vector = new THREE.Vector3();
 		var raycaster = new THREE.Raycaster();
@@ -198,10 +204,12 @@ theatre.display=function(allData){
 
 			var intersects = raycaster.intersectObjects( composite.children, true );	
 
-			//  if object is not clicked and not in nodeView, return to prior position
+			//  if object is not clicked and in nodeView, return to prior position
 			if (intersects.length < 1 && theatre.nodeView) {  
-				new TWEEN.Tween(camera.position).to(theatre.lastPosition, cameraSpeed).start();
-				new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, cameraSpeed).start();
+
+			// REMOVE THIS TO A 'RETURN' BUTTON
+				// new TWEEN.Tween(camera.position).to(theatre.lastPosition, theatre.cameraSpeed).start();
+				// new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, theatre.cameraSpeed).start();
 
 				if (document.getElementById("modal-canvas")){
 					document.body.removeChild(document.getElementById("modal-canvas"));
@@ -234,8 +242,8 @@ theatre.display=function(allData){
 				var endRotation = new THREE.Quaternion().copy( nextCamera.rotation );
 
 				// camera motion on click - position & rotation
-				new TWEEN.Tween(camera.position).to(targetPosition, cameraSpeed).start();
-				new TWEEN.Tween( camera.rotation ).to(endRotation, cameraSpeed).start();
+				new TWEEN.Tween(camera.position).to(targetPosition, theatre.cameraSpeed).start();
+				new TWEEN.Tween( camera.rotation ).to(endRotation, theatre.cameraSpeed).start();
 				nextCamera = null;
 
 				// raphael code here???
@@ -278,6 +286,7 @@ theatre.display=function(allData){
 			if ( (currentIndex+1) === composite.children[i].componentData.timelineIndex && composite.children[i].componentData.primary) {
 				console.log(composite.children[i].componentData.primary);
 				console.log('the next one!', composite.children[i]);
+				theatre.viewNode(composite.children[i])
 			}
 		}
 	};
@@ -285,6 +294,26 @@ theatre.display=function(allData){
 	theatre.prevNode = function() {
 
 	};
+
+	theatre.viewNode = function(node) {
+
+	};
+
+	theatre.returnCamera = function() {
+		// console.log('lastPosition:', theatre.lastPosition, 'lastRotation:',theatre.lastRotation);
+		// if (theatre.lastPosition) {
+		// 	new TWEEN.Tween(camera.position).to(theatre.lastPosition, theatre.cameraSpeed).start();
+		// 	new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, theatre.cameraSpeed).start();
+		// }
+
+		// console.log('initCam.position:',theatre.initCamera.position, 'initCam.rotation:', theatre.initCamera.rotation);
+
+		if (theatre.initCamera) {
+			new TWEEN.Tween(camera.position).to(theatre.initCamera.position, theatre.cameraSpeed).start();
+			new TWEEN.Tween( camera.rotation ).to(theatre.initCamera.rotation, theatre.cameraSpeed).start();
+		}
+	};
+
 
 	theatre.pause=function(){
 		theatre.scenePaused ? particleLight.tween.start() : particleLight.tween.stop();
@@ -305,8 +334,8 @@ theatre.display=function(allData){
 				});
 				// return to lastposition - not working right now
 				// if (theatre.nodeView) {
-				// 	new TWEEN.Tween(camera.position).to(theatre.lastPosition, cameraSpeed).start();
-				// 	new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, cameraSpeed).start();
+				// 	new TWEEN.Tween(camera.position).to(theatre.lastPosition, theatre.cameraSpeed).start();
+				// 	new TWEEN.Tween( camera.rotation ).to(theatre.lastRotation, theatre.cameraSpeed).start();
 				// }
 
 			} else {
