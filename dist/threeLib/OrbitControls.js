@@ -4,12 +4,16 @@
  * @author alteredq / http://alteredqualia.com/
  * @author WestLangley / http://github.com/WestLangley
  * @author erich666 / http://erichaines.com
+ * @author conrad / http://mattconrad.co
  */
 /*global THREE, console */
 
 // This set of controls performs orbiting, dollying (zooming), and panning. It maintains
 // the "up" direction as +Y, unlike the TrackballControls. Touch on tablet and phones is
 // supported.
+//
+// These controls have been customized to allow for changes to be made to a scene
+// and then to re-render it.
 //
 //    Orbit - left mouse / touch: one finger move
 //    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
@@ -21,16 +25,27 @@
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
 
-THREE.OrbitControls = function ( object, domElement, target ) {
+THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
   this.object = object;
   this.domElement = ( domElement !== undefined ) ? domElement : document;
 
+  // Remove prior controls event listeners upon subsequent compiling/rendering:
+  if (compiledStatus) {
+    this.domElement.removeEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+    this.domElement.removeEventListener( 'mousedown', onMouseDown, false );
+    this.domElement.removeEventListener( 'mousewheel', onMouseWheel, false );
+    this.domElement.removeEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
+    this.domElement.removeEventListener( 'touchstart', touchstart, false );
+    this.domElement.removeEventListener( 'touchend', touchend, false );
+    this.domElement.removeEventListener( 'touchmove', touchmove, false );
+    this.domElement.removeEventListener( 'keydown', onKeyDown, false );
+  }
+
   // API
 
   // Set to false to disable this control
-  // this.enabled = true;
-
+  this.enabled = true;
 
   // "target" sets the location of focus, where the control orbits around
   // and where it pans with respect to.
@@ -339,7 +354,7 @@ THREE.OrbitControls = function ( object, domElement, target ) {
   }
 
   function onMouseDown( event ) {
-
+    console.log('onMouseDown called');
     // console.log('theatre.controlsEnabled:', theatre.controlsEnabled);
     if ( theatre.controlsEnabled === false ) return;
     event.preventDefault();
@@ -366,7 +381,7 @@ THREE.OrbitControls = function ( object, domElement, target ) {
       panStart.set( event.clientX, event.clientY );
 
     }
-
+    console.log('state:',state);
     if ( state !== STATE.NONE ) {
       document.addEventListener( 'mousemove', onMouseMove, false );
       document.addEventListener( 'mouseup', onMouseUp, false );
@@ -376,7 +391,8 @@ THREE.OrbitControls = function ( object, domElement, target ) {
   }
 
   function onMouseMove( event ) {
-
+    console.log('onMouseMove called');
+    // debugger;
     if ( theatre.controlsEnabled === false ) return;
 
     event.preventDefault();
@@ -444,6 +460,7 @@ THREE.OrbitControls = function ( object, domElement, target ) {
     scope.dispatchEvent( endEvent );
     state = STATE.NONE;
   }
+
     // The following is inside scene.js - if this action is the problem, might refactor to go here in order to allow highlighting of ShareURL 
   //   if (theatre.expanded === false) return;
 
@@ -555,7 +572,7 @@ THREE.OrbitControls = function ( object, domElement, target ) {
 
   }
 
-  this.onKeyDown = function ( event ) {
+  onKeyDown = function ( event ) {
 
     if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
 
@@ -566,10 +583,12 @@ THREE.OrbitControls = function ( object, domElement, target ) {
 
         case scope.keys.LEFT:
           theatre.prevNode();
+          // scope.update();
           break;
 
         case scope.keys.RIGHT:
           theatre.nextNode();
+          // scope.update();
           break;
       }
 
@@ -751,7 +770,7 @@ THREE.OrbitControls = function ( object, domElement, target ) {
   this.domElement.addEventListener( 'touchend', touchend, false );
   this.domElement.addEventListener( 'touchmove', touchmove, false );
 
-  this.domElement.addEventListener( 'keydown', this.onKeyDown, false );
+  this.domElement.addEventListener( 'keydown', onKeyDown, false );
 
 
   // force an update at start
