@@ -249,11 +249,6 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
     var position = this.object.position;
 
-    if (theatre.nodeView) {
-      console.log('this.object.position:', this.object.position);
-      console.log('theatre.camera.position', theatre.camera.position);
-    }
-
     offset.copy( position ).sub( theatre.target );
 
     // rotate offset to "y-axis-is-up" space
@@ -386,7 +381,6 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
       panStart.set( event.clientX, event.clientY );
 
     }
-    console.log('state:',state);
     if ( state !== STATE.NONE ) {
       document.addEventListener( 'mousemove', onMouseMove, false );
       document.addEventListener( 'mouseup', onMouseUp, false );
@@ -396,7 +390,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
   function onMouseMove( event ) {
     // debugger;
-    console.log('onMouseMove');
+    // console.log('onMouseMove');
     if ( theatre.controlsEnabled === false ) return;
 
     event.preventDefault();

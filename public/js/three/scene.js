@@ -48,9 +48,8 @@ theatre.display = function(allData, onRendered) {
 		camera.position.y = camDistPartial * 1.5;
 		camera.position.z = camDistPartial;
 		theatre.target = new THREE.Vector3(0, 0, composite.maxSize/2);
-		theatre.initTarget.copy(theatre.target);
+		theatre.initTarget = new THREE.Vector3().copy(theatre.target);
 		// theatre.initTarget.copy( position ).sub( theatre.target );
-
 
 		// Fourth argument is just for anything that is defined AFTER the controls.
 		controls = new THREE.OrbitControls(camera, container, theatre.target, theatre.initCamera);
@@ -61,7 +60,6 @@ theatre.display = function(allData, onRendered) {
 		theatre.initCamera = {
 			'position': new THREE.Vector3().copy( camera.position ), 
 			'rotation': new THREE.Quaternion().copy( camera.rotation )};
-
 
 		selectHalo = subroutines.SelectHalo(scene);
 		scene.add(selectHalo);
@@ -146,6 +144,15 @@ theatre.display = function(allData, onRendered) {
 		}
 	}
 
+	// function onMouseUp (e) {
+	// 	//  if object is not clicked, remove Raphael modals
+	// 	if (intersects.length < 1 && theatre.nodeView) {  
+
+	// 		if (document.getElementById("modal-canvas")){
+	// 			document.body.removeChild(document.getElementById("modal-canvas"));
+	// 		}
+	// }
+
 	function onMouseDown ( e ) {
 		e.preventDefault();
 		if (theatre.expanded === false) return;
@@ -159,6 +166,7 @@ theatre.display = function(allData, onRendered) {
 		//extract that offset into an external variable that doesn't have to be recalculated every time... later
 		var x =  ( event.clientX / window.innerWidth ) * 2 - 1;
 		var y = - ( ( event.clientY-$(container).offset().top ) / window.innerHeight ) * 2 + 1;
+
 		if ( camera instanceof THREE.OrthographicCamera ) {
 	    vector.set( x, y, - 1 ); // z = - 1 important!
 	    vector.unproject( camera );
@@ -368,6 +376,7 @@ theatre.display = function(allData, onRendered) {
 			new TWEEN.Tween(camera.position).to(theatre.initCamera.position, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
 			new TWEEN.Tween( camera.rotation ).to(theatre.initCamera.rotation, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
 		}
+		theatre.target = theatre.initTarget;
 
 		theatre.nodeView = false;
 	};
