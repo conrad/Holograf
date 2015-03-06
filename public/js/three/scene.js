@@ -47,10 +47,13 @@ theatre.display = function(allData, onRendered) {
 		camera.position.x = -camDistPartial;
 		camera.position.y = camDistPartial * 1.5;
 		camera.position.z = camDistPartial;
-		var target = new THREE.Vector3(0, 0, composite.maxSize/2);
+		theatre.target = new THREE.Vector3(0, 0, composite.maxSize/2);
+		theatre.initTarget.copy(theatre.target);
+		// theatre.initTarget.copy( position ).sub( theatre.target );
+
 
 		// Fourth argument is just for anything that is defined AFTER the controls.
-		controls = new THREE.OrbitControls(camera, container, target, theatre.initCamera);
+		controls = new THREE.OrbitControls(camera, container, theatre.target, theatre.initCamera);
 		theatre.controls = controls;
 
 		controls.addEventListener( 'change', render );
@@ -80,7 +83,7 @@ theatre.display = function(allData, onRendered) {
 		// User interaction
 		window.addEventListener( 'mousemove', onMouseMove, false );
 		window.addEventListener( 'resize', onWindowResize, false );
-		window.addEventListener( 'mouseup', onMouseUp, false);
+		window.addEventListener( 'mousedown', onMouseDown, false);
 
 	}
 
@@ -143,7 +146,7 @@ theatre.display = function(allData, onRendered) {
 		}
 	}
 
-	function onMouseUp ( e ) {
+	function onMouseDown ( e ) {
 		e.preventDefault();
 		if (theatre.expanded === false) return;
 		if (theatre.controlsEnabled === false) return;
@@ -191,6 +194,8 @@ theatre.display = function(allData, onRendered) {
 				theatre.viewNode(theatre.currentNode.position);
 
 				theatre.nodeView = true;
+				// !!!
+				controls.update();
 
 				//raphael code here?
 				if ($("#modal-canvas").length===0){
@@ -327,8 +332,9 @@ theatre.display = function(allData, onRendered) {
 		var newX = nodePosition.x - 800;			
 		var newY = nodePosition.y + 800;
 		var newZ = nodePosition.z - 300;
+		theatre.target = new THREE.Vector3(nodePosition.x, nodePosition.y, nodePosition.z);
 		var targetPosition = new THREE.Vector3(newX, newY, newZ);
-		
+
 		// camera rotation
 			// use extra camera to find rotation at target location
 		var nextCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
@@ -400,7 +406,7 @@ theatre.display = function(allData, onRendered) {
 		// document.removeEventListener( 'keydown', controls.onKeyDown, false );
 		window.removeEventListener( 'mousemove', onMouseMove, false );
 		window.removeEventListener( 'resize', onWindowResize, false );
-		window.removeEventListener( 'mouseup', onMouseUp, false);
+		window.removeEventListener( 'mousedown', onMouseDown, false);
 
 		theatre.scene = null;
 		theatre.camera = null;

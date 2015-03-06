@@ -49,10 +49,10 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
   // "target" sets the location of focus, where the control orbits around
   // and where it pans with respect to.
-  this.target = target || new THREE.Vector3(0,0,2500);
+  theatre.target = target || new THREE.Vector3(0,0,2500);
 
   // center is old, deprecated; use "target" instead
-  this.center = this.target;
+  this.center = theatre.target;
 
   // This option actually enables dollying in and out; left as "zoom" for
   // backwards compatibility
@@ -132,7 +132,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
   // for reset
 
-  this.target0 = this.target.clone();
+  theatre.target0 = theatre.target.clone();
   this.position0 = this.object.position.clone();
 
   // so camera.up is the orbit axis
@@ -249,7 +249,12 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
     var position = this.object.position;
 
-    offset.copy( position ).sub( this.target );
+    if (theatre.nodeView) {
+      console.log('this.object.position:', this.object.position);
+      console.log('theatre.camera.position', theatre.camera.position);
+    }
+
+    offset.copy( position ).sub( theatre.target );
 
     // rotate offset to "y-axis-is-up" space
     offset.applyQuaternion( quat );
@@ -290,7 +295,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
     // );
 
     // move target to panned location
-    this.target.add( pan );
+    theatre.target.add( pan );
 
     offset.x = radius * Math.sin( phi ) * Math.sin( theta );
     offset.y = radius * Math.cos( phi );
@@ -299,9 +304,9 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
     // rotate offset back to "camera-up-vector-is-up" space
     offset.applyQuaternion( quatInverse );
 
-    position.copy( this.target ).add( offset );
+    position.copy( theatre.target ).add( offset );
 
-    this.object.lookAt( this.target );
+    this.object.lookAt( theatre.target );
 
     thetaDelta = 0;
     phiDelta = 0;
@@ -329,7 +334,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
     state = STATE.NONE;
 
-    this.target.copy( this.target0 );
+    theatre.target.copy( theatre.target0 );
     this.object.position.copy( this.position0 );
 
     this.update();
@@ -354,7 +359,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
   }
 
   function onMouseDown( event ) {
-    console.log('onMouseDown called');
+    // console.log('event:', event);
     // console.log('theatre.controlsEnabled:', theatre.controlsEnabled);
     if ( theatre.controlsEnabled === false ) return;
     event.preventDefault();
@@ -387,12 +392,11 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
       document.addEventListener( 'mouseup', onMouseUp, false );
       scope.dispatchEvent( startEvent );
     }
-
   }
 
   function onMouseMove( event ) {
-    console.log('onMouseMove called');
     // debugger;
+    console.log('onMouseMove');
     if ( theatre.controlsEnabled === false ) return;
 
     event.preventDefault();
