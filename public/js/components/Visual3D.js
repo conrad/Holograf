@@ -61,7 +61,7 @@ module.exports = React.createClass({
     // }
 
     return (
-      <div>
+      <div className="visual-container">
         <Button className="visualButton" bsStyle="primary" onClick={this.pauseScene} >Pause</Button>
         <Button className="visualButton" bsStyle="primary" onClick={this.expandScene} >Expand</Button>
         <Button className="visualButton" bsStyle="primary" onClick={this.prevNode} >Previous</Button>

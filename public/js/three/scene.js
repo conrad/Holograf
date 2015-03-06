@@ -48,12 +48,13 @@ theatre.display = function(allData, onRendered) {
 		camera.position.y = camDistPartial * 1.5;
 		camera.position.z = camDistPartial;
 		var target = new THREE.Vector3(0, 0, composite.maxSize/2);
-		// camera.lookAt(target);  // PLACED IN OrbitControls.js
 
-		controls = new THREE.OrbitControls(camera, container, target);
+		// Fourth argument is just for anything that is defined AFTER the controls.
+		controls = new THREE.OrbitControls(camera, container, target, theatre.initCamera);
 		theatre.controls = controls;
-		// controls.addEventListener( 'change', render );
-		// theatre.target = target;
+
+		controls.addEventListener( 'change', render );
+
 		theatre.initCamera = {
 			'position': new THREE.Vector3().copy( camera.position ), 
 			'rotation': new THREE.Quaternion().copy( camera.rotation )};
@@ -69,7 +70,7 @@ theatre.display = function(allData, onRendered) {
 		theatre.renderer = renderer;
 		renderer.setClearColor( 0x333333, 1);
 		renderer.setPixelRatio( window.devicePixelRatio );
-		renderer.setSize( window.innerWidth, window.innerHeight - 88);  // hard-coded top offset
+		renderer.setSize( window.innerWidth, window.innerHeight - 105);  // hard-coded top offset
 		// renderer.setSize( window.innerWidth, window.innerHeight-$(container).offset().top );
 	
 		container = document.getElementById('three-scene');
@@ -88,7 +89,7 @@ theatre.display = function(allData, onRendered) {
 		windowHalfY = window.innerHeight / 2;
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
-		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setSize( window.innerWidth, window.innerHeight - 105);
 		// render();
 	}
 
@@ -372,7 +373,7 @@ theatre.display = function(allData, onRendered) {
 	};
 
 	theatre.expand = function() {
-		console.log('expand - theatre.expanded:', theatre.expanded);
+		// console.log('expand - theatre.expanded:', theatre.expanded);
 		var action = theatre.expanded ? "collapse" : "expand";
 		for (var i = 0; i < composite.children.length; i++){
 			composite.children[i][action].start();
@@ -396,7 +397,11 @@ theatre.display = function(allData, onRendered) {
 	theatre.clearScene = function() {
 
 		cancelAnimationFrame(theatre.reqId);// Stop the animation
-		document.removeEventListener( 'keydown', controls.onKeyDown, false )
+		// document.removeEventListener( 'keydown', controls.onKeyDown, false );
+		window.removeEventListener( 'mousemove', onMouseMove, false );
+		window.removeEventListener( 'resize', onWindowResize, false );
+		window.removeEventListener( 'mouseup', onMouseUp, false);
+
 		theatre.scene = null;
 		theatre.camera = null;
 		theatre.controls = null;
@@ -409,7 +414,6 @@ theatre.display = function(allData, onRendered) {
 		function empty(elem) {
 		    while (elem.lastChild) elem.removeChild(elem.lastChild);
 		}
-
 
 	};
 

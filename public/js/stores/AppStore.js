@@ -60,7 +60,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
   compileCode : function() {
 
     if (_compiledStatus) {
-      console.log('cleared scene!');
+      // console.log('cleared scene!');
       theatre.clearScene();
 
       // reset initial values
@@ -86,7 +86,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
 
   compileEnd : function() {
     setTimeout(function() {
-      console.log('done!')
       _isLoading = false;
       _selectedTab = 2;
       AppStore.emitChange();

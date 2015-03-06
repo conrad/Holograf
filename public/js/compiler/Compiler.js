@@ -9,10 +9,10 @@ var Compiler = function (rawCode) {
   var wrappedCode = generateCode(wrappedSyntaxTree);
   var data = execute(wrappedCode, rawCode);
 
-  console.log(wrappedCode);
-  console.log(JSON.stringify(data.programSteps,null,1));
-  console.log(JSON.stringify(data.components,null,1));
-  console.log(JSON.stringify(data.lines,null,1));
+  // console.log(wrappedCode);
+  // console.log(JSON.stringify(data.programSteps,null,1));
+  // console.log(JSON.stringify(data.components,null,1));
+  // console.log(JSON.stringify(data.lines,null,1));
 
   return data;
 }

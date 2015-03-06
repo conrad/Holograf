@@ -42,7 +42,7 @@ module.exports = function (wrappedCode, rawCode) {
 
 
   Object.prototype.constructor = function () {
-    console.log('YEAH');
+    // console.log('YEAH');
     return this;
   }
 
