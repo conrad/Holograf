@@ -49,10 +49,10 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
   // "target" sets the location of focus, where the control orbits around
   // and where it pans with respect to.
-  theatre.target = target || new THREE.Vector3(0,0,2500);
+  this.target = target || new THREE.Vector3(0,0,2500);
 
   // center is old, deprecated; use "target" instead
-  this.center = theatre.target;
+  this.center = this.target;
 
   // This option actually enables dollying in and out; left as "zoom" for
   // backwards compatibility
@@ -89,7 +89,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
   this.noKeys = false;
 
   // The keys
-  this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40, EXPAND: 32, PAUSE: 13 };
+  this.keys = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, EXPAND: 32, PAUSE: 13 };
 
   // Mouse buttons
   this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
@@ -131,8 +131,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
   var state = STATE.NONE;
 
   // for reset
-
-  theatre.target0 = theatre.target.clone();
+  this.target0 = this.target.clone();
   this.position0 = this.object.position.clone();
 
   // so camera.up is the orbit axis
@@ -249,7 +248,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
     var position = this.object.position;
 
-    offset.copy( position ).sub( theatre.target );
+    offset.copy( position ).sub( this.target );
 
     // rotate offset to "y-axis-is-up" space
     offset.applyQuaternion( quat );
@@ -290,7 +289,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
     // );
 
     // move target to panned location
-    theatre.target.add( pan );
+    this.target.add( pan );
 
     offset.x = radius * Math.sin( phi ) * Math.sin( theta );
     offset.y = radius * Math.cos( phi );
@@ -299,9 +298,12 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
     // rotate offset back to "camera-up-vector-is-up" space
     offset.applyQuaternion( quatInverse );
 
-    position.copy( theatre.target ).add( offset );
+    if (theatre.nodeView) {
+      this.target = theatre.target;
+    }
+    position.copy( this.target ).add( offset );
 
-    this.object.lookAt( theatre.target );
+    this.object.lookAt( this.target );
 
     thetaDelta = 0;
     phiDelta = 0;
@@ -327,9 +329,21 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
   this.reset = function () {
 
-    state = STATE.NONE;
+    if ( document.getElementById("modal-canvas") ){
+      document.body.removeChild(document.getElementById("modal-canvas"));
+    }
 
-    theatre.target.copy( theatre.target0 );
+    if (theatre.initCamera) {
+      new TWEEN.Tween(theatre.camera.position).to(theatre.initCamera.position, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
+      new TWEEN.Tween( theatre.camera.rotation ).to(theatre.initCamera.rotation, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
+    }
+    // theatre.target = theatre.initTarget;
+    theatre.selectHalo.material.opacity = 0;
+
+    state = STATE.NONE;
+    theatre.nodeView = false;
+
+    this.target.copy( this.target0 );
     this.object.position.copy( this.position0 );
 
     this.update();
@@ -574,8 +588,7 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
 
     if ( scope.enabled === false || scope.noKeys === true || scope.noPan === true ) return;
 
-    // change key controls if you're in nodeView
-    if ( theatre.nodeView ) {
+    // if ( theatre.nodeView ) {
 
       switch ( event.keyCode ) {
 
@@ -588,32 +601,37 @@ THREE.OrbitControls = function ( object, domElement, target, compiledStatus ) {
           theatre.nextNode();
           // scope.update();
           break;
-      }
 
-      return;
-    }
+        case scope.keys.DOWN:
+          scope.reset();
+          // scope.update();
+          break;
+    //   }
 
-    switch ( event.keyCode ) {
+    //   return;
+    // }
 
-      case scope.keys.UP:
-        scope.pan( 0, scope.keyPanSpeed );
-        scope.update();
-        break;
+    // switch ( event.keyCode ) {
 
-      case scope.keys.BOTTOM:
-        scope.pan( 0, - scope.keyPanSpeed );
-        scope.update();
-        break;
+    //   case scope.keys.UP:
+    //     scope.pan( 0, scope.keyPanSpeed );
+    //     scope.update();
+    //     break;
 
-      case scope.keys.LEFT:
-        scope.pan( scope.keyPanSpeed, 0 );
-        scope.update();
-        break;
+    //   case scope.keys.DOWN:
+    //     scope.pan( 0, - scope.keyPanSpeed );
+    //     scope.update();
+    //     break;
 
-      case scope.keys.RIGHT:
-        scope.pan( - scope.keyPanSpeed, 0 );
-        scope.update();
-        break;
+    //   case scope.keys.LEFT:
+    //     scope.pan( scope.keyPanSpeed, 0 );
+    //     scope.update();
+    //     break;
+
+    //   case scope.keys.RIGHT:
+    //     scope.pan( - scope.keyPanSpeed, 0 );
+    //     scope.update();
+    //     break;
 
       case scope.keys.EXPAND:
         theatre.expand();

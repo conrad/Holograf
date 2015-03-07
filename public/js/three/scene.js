@@ -64,6 +64,7 @@ theatre.display = function(allData, onRendered) {
 		selectHalo = subroutines.SelectHalo(scene);
 		scene.add(selectHalo);
 		selectHalo.material.opacity = 0;
+		theatre.selectHalo = selectHalo;
 
 
 		// renderer
@@ -272,6 +273,20 @@ theatre.display = function(allData, onRendered) {
 		var foundNext = false;
 		var i = 0;
 		utils.dull(composite);
+
+		if (!theatre.nodeView) {
+			while (!foundNext && i < composite.children.length) {
+				// Get this to move on to the next one that's primary, even if it's not the NEXT index
+				if (composite.children[i].componentData.primary ) {				
+					theatre.currentNode = composite.children[i];
+					theatre.viewIndex = i;
+					foundNext = true;
+				}
+				i++;
+			}
+		}
+
+		i = 0;
 		while (!foundNext && i < composite.children.length) {
 			// Get this to move on to the next one that's primary, even if it's not the NEXT index
 			if ( theatre.viewIndex < composite.children[i].componentData.timelineIndex && composite.children[i].componentData.primary ) {				
@@ -305,6 +320,18 @@ theatre.display = function(allData, onRendered) {
 		var i = composite.children.length - 1; 
 		utils.dull(composite);
 		
+		if (!theatre.nodeView) {
+			while (!foundPrev && i >= 0) {
+				if (composite.children[i].componentData.primary ) {				
+					theatre.currentNode = composite.children[i];
+					theatre.viewIndex = i;
+					foundPrev = true;
+				}
+				i--;
+			}
+		} 
+
+		i = composite.children.length - 1;
 		while (!foundPrev && i >= 0) {
 			if ( theatre.viewIndex > composite.children[i].componentData.timelineIndex && composite.children[i].componentData.primary ) {
 				theatre.currentNode = composite.children[i];
@@ -325,6 +352,7 @@ theatre.display = function(allData, onRendered) {
 				i--;
 			}
 		}
+
 		placeHalo(theatre.currentNode.position);
 		theatre.viewNode(theatre.currentNode.position);
 		if (theatre.currentNode && theatre.currentNode.componentData.id){
@@ -371,15 +399,15 @@ theatre.display = function(allData, onRendered) {
 		theatre.nodeView = true;
 	};
 
-	theatre.returnCamera = function() {
-		if (theatre.initCamera) {
-			new TWEEN.Tween(camera.position).to(theatre.initCamera.position, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
-			new TWEEN.Tween( camera.rotation ).to(theatre.initCamera.rotation, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
-		}
-		theatre.target = theatre.initTarget;
-
-		theatre.nodeView = false;
-	};
+	// theatre.returnCamera = function() {
+	// 	if (theatre.initCamera) {
+	// 		new TWEEN.Tween(camera.position).to(theatre.initCamera.position, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
+	// 		new TWEEN.Tween( camera.rotation ).to(theatre.initCamera.rotation, theatre.cameraSpeed).easing(TWEEN.Easing.Quadratic.InOut).start();
+	// 	}
+	// 	// theatre.target = theatre.initTarget;
+	// 	theatre.selectHalo.material.opacity = 0;
+	// 	theatre.nodeView = false;
+	// };
 
 
 	theatre.pause = function(){

@@ -43,7 +43,7 @@ module.exports = React.createClass({
     theatre.expand();
   },
   returnCamera: function() {
-    theatre.returnCamera();
+    theatre.controls.reset();
   },
   nextNode: function() {
     theatre.nextNode();
