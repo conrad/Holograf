@@ -156,7 +156,9 @@ theatre.display = function(allData, onRendered) {
 
 	function onMouseDown ( e ) {
 		e.preventDefault();
-		if (theatre.expanded === false) return;
+		if (theatre.expanded === false) {
+			theatre.expand();
+		}
 		if (theatre.controlsEnabled === false) return;
 
 		var vector = new THREE.Vector3();
@@ -365,7 +367,7 @@ theatre.display = function(allData, onRendered) {
 		if (!theatre.expanded) return;
 
 		// final camera position
-		var newX = nodePosition.x - 800;			
+		var newX = nodePosition.x - 800;
 		var newY = nodePosition.y + 800;
 		var newZ = nodePosition.z - 300;
 		theatre.target = new THREE.Vector3(nodePosition.x, nodePosition.y, nodePosition.z);
