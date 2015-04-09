@@ -1,4 +1,4 @@
-SuspiciousPi is built using gulp.
+Holograf is built using gulp.
 
 First, install dependencies
 

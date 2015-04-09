@@ -1,4 +1,4 @@
-# SuspiciousPi API and Compiler
+# Holograf API and Compiler
 
 The goal of the compiler is to create a representation of the program state over time It accomplishes this by performing four tasks:
 
