@@ -20,8 +20,10 @@ var Error = require('./modals/Error');
 
 module.exports = React.createClass({
 
+  // Allows renderOverlay method with Bootstrap styling for loading modal
   mixins: [OverlayMixin],
 
+  // change tab method
   handleSelect: function (selectedTab) {
     Actions.selectTab(selectedTab);
   },
@@ -32,8 +34,7 @@ module.exports = React.createClass({
       if (document.getElementById("modal-canvas")){
         document.body.removeChild(document.getElementById("modal-canvas"));
       }
-      // console.log('selectedTab:', this.props.selectedTab);
-    } else {            //if (this.props.compiledStatus) {
+    } else {            
       theatre.controlsEnabled = true;
     }
 
@@ -60,6 +61,7 @@ module.exports = React.createClass({
     );
   },
 
+  // second render function ("wormhole" in docs) to add or remove overlay 
   renderOverlay: function () {
 
     if (this.props.error) {
@@ -73,7 +75,6 @@ module.exports = React.createClass({
     } else {
       return <span/>;    
     }
-
 
   }
 });

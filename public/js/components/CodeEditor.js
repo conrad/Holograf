@@ -14,6 +14,7 @@ var Actions = require('../actions/Actions');
 
 module.exports = React.createClass({
 
+  // 
   options: {
     textAreaClassName: ['form-control'],
     textAreaStyle: {minHeight: '10em'},
@@ -22,7 +23,7 @@ module.exports = React.createClass({
     theme: 'blackboard',
     lineNumbers: true,
     onChange: function (e) {
-      Actions.updateCode(e.target.value);
+      Actions.updateCode(e.target.value);   // relay changes immediately to AppStore
     }
   },
 

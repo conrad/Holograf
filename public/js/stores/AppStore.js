@@ -9,10 +9,12 @@ var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 var compile = require('../compiler/Compiler')
 
+// variables for emitting changes to store
 var CHANGE_EVENT = 'change';
 var COMPILE_EVENT = 'compile';
 
 var _code, _data, _shareUrl, _compiledStatus, _selectedTab, _isLoading, _error;
+// initial code in application editor
 var templateCode = 
 'var fibonacci = function (n) {\n'+
 '  if (n < 2){\n'+
@@ -25,7 +27,8 @@ var templateCode =
 'fibonacci(5);\n';
 
 
-var AppStore = assign({}, EventEmitter.prototype, {
+var AppStore = assign({}, EventEmitter.prototype, {   
+  // extends EventEmitter object to tell React components to update state
 
   initialize: function() {
     _code = '';
@@ -48,19 +51,21 @@ var AppStore = assign({}, EventEmitter.prototype, {
     });
   },
 
+  // set store to have same data as editor; called whenever change made to editor
   updateCode : function(code) {
-    if (code === null) {
+    if (code === null) {      // if none, default to templateCode
       _code = templateCode;
     } else {
       _code = code;
     }
+    // emit change for React components to update state
     AppStore.emitChange();
   },
 
   compileCode : function() {
 
     if (_compiledStatus) {
-      // console.log('cleared scene!');
+      // delete prior Three.js scene if already compiled
       theatre.clearScene();
 
       // reset initial values
@@ -69,11 +74,12 @@ var AppStore = assign({}, EventEmitter.prototype, {
       _compiledStatus = false;
     }
 
-    setTimeout(function (){
+    setTimeout(function (){   // allow slight delay before adding loading modal
       _isLoading = true;
       AppStore.emitChange();
     }, 200);
 
+    // calls main compiler.js function and waits for return
     compile(_code)
       .then(function (data) {
         _compiledStatus = true;
@@ -122,6 +128,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
     AppStore.emitChange();
   },
 
+  // handle emitting changes for React components to know when updates occur
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   }, 
@@ -132,7 +139,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, callback);
   },
 
-  // Not using because still can't detect when data has gone done
+  // Not using because this method can't detect when data compile process has completed
   emitCompile: function() {
     this.emit(COMPILE_EVENT);
   },
@@ -143,6 +150,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
     this.removeListener(COMPILE_EVENT, callback);
   },
 
+  // sync invocations with actions coming through AppDispatcher
   dispatcherIndex: AppDispatcher.register(function(payload){
 
     var action = payload.action; 
